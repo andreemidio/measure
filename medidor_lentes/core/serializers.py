@@ -22,6 +22,7 @@ class DadosMedicaoSerializer(serializers.ModelSerializer):
 
         validated_data["horizontal"] = lens["horizontal"]
         validated_data["vertical"] = lens["vertical"]
+        validated_data["diagonal_maior"] = lens["diagonal_maior"]
 
         dado_medicao = DadosMedicao.objects.create(**validated_data)
 
