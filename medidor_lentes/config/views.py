@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User, Group
-from rest_framework import viewsets
 from rest_framework import permissions
-from .serializers import UserSerializer, GroupSerializer
+from rest_framework import viewsets
+
+from apps.medicao_lente.serializers import UserSerializer, GroupSerializer
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -13,6 +15,3 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated]
-
-
-

@@ -1,10 +1,8 @@
-from math import atan2, sqrt, pi, sin, cos
-
 import cv2
 import numpy as np
 from shapely import LineString
 
-from shapely.geometry import Point, Polygon
+from shapely.geometry import Polygon
 
 
 class MeasurementLens:
@@ -147,7 +145,7 @@ class MeasurementLens:
         values = dict(
             horizontal=((x1 + h1) * 5) / 94.9,
             vertical=((y1 + h1) * 4) / 60.9,
-            diagonal_maior=(diagonal*61)/498,
+            diagonal_maior=(diagonal * 61) / 498,
             # oma=raios
 
         )

@@ -4,7 +4,7 @@ sandro
 Api Root Dados Medicao List
 
 Dados Medicao List
-GET /core/
+GET /medicao_lente/
 HTTP 200 OK
 Allow: GET, POST, HEAD, OPTIONS
 Content-Type: application/json
@@ -16,7 +16,7 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'medidor_lentes.settings')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
