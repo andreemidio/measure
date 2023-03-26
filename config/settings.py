@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 
-import cloudinary
 from prettyconf import Configuration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 config = Configuration()
 
-SECRET_KEY = config('SECRET_KEY', )
+SECRET_KEY = config('SECRET_KEY')
 
 DEBUG = config('DEBUG', default=False, cast=config.boolean)
 
@@ -37,19 +36,19 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'cloudinary_storage',
     'django.contrib.staticfiles',
-    'cloudinary',
     'drf_yasg',
+    'cloudinary',
     'rest_framework',
     'django_cpf_cnpj',
     'django_filters',
     'apps.medicao_lente.apps.MedicaoLenteConfig',
+    'apps.usuarios.apps.UsuariosConfig'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -79,6 +78,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+AUTH_USER_MODEL = 'usuarios.Usuarios'
+
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
@@ -107,11 +108,11 @@ DATABASES = {
 # default_db_url = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 #
 # if 'localhost' not in ALLOWED_HOSTS:
-#     dburl = partial(dburl, engine="django.db.backends.postgresql_psycopg2", conn_max_age=600, ssl_require=False)
-# else:
-#     DATABASES = {
-#         'default': config('DATABASE_URL', default=default_db_url, cast=dburl),
-#     }
+#     dburl = partial(dburl, conn_max_age=600, ssl_require=False)
+#
+# DATABASES = {
+#     'default': config('DATABASE_URL', default=default_db_url, cast=dburl),
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -131,55 +132,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-cloudinary.config(
-    cloud_name=os.environ.get("diwsy7nll"),
-    api_key=os.environ.get("117912794282771"),
-    api_secret=os.environ.get("DKKYKKRQE4B1A__W9h71W4AD6mQ"),
-)
-
-# REST_FRAMEWORK = {
-#     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
-# }
-# Internationalization
-# https://docs.djangoproject.com/en/3.1/topics/i18n/
-
-LANGUAGE_CODE = 'pt-br'
-
-TIME_ZONE = 'America/Sao_Paulo'
-
-USE_I18N = True
-
-USE_L10N = True
-
-USE_TZ = True
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.1/howto/static-files/
-
-STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
-
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'  # or any prefix you choose
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-CLOUDINARY_STORAGE = {
-    # other settings, like credentials
-    'STATICFILES_MANIFEST_ROOT': os.path.join(BASE_DIR, 'staticfiles')
-}
-
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 5,
     # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',
-    'DATE_INPUT_FORMATS': ['%d/%m/%Y'],
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
         # 'rest_framework.permissions.AllowAny',
@@ -207,8 +163,55 @@ REST_FRAMEWORK = {
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 
+# Internationalization
+# https://docs.djangoproject.com/en/3.1/topics/i18n/
+
+LANGUAGE_CODE = 'pt-br'
+
+TIME_ZONE = 'America/Sao_Paulo'
+
+USE_I18N = True
+
+USE_L10N = True
+
+USE_TZ = True
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/3.1/howto/static-files/
+
+APPEND_SLASH = False
+
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [BASE_DIR / 'static', ]
+# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'  # or any prefix you choose
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# CLOUDINARY_STORAGE = {
+#     # other settings, like credentials
+#     'STATICFILES_MANIFEST_ROOT': os.path.join(BASE_DIR, 'staticfiles')
+# }
+
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'aemidio',
     'API_KEY': '967598265435156',
     'API_SECRET': 'kQj_rNAdmA8XezKr9SnDBYE9tnc'
+}
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'basic': {
+            'type': 'basic'
+        }
+    },
+
+}
+
+REDOC_SETTINGS = {
+    'LAZY_RENDERING': False,
+
 }

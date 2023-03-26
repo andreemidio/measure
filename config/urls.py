@@ -8,11 +8,9 @@ from drf_yasg.views import get_schema_view
 from rest_framework import routers, permissions
 
 from apps.medicao_lente.views import DadosMedicaoViewSet, CnpjList
-from . import views
 
 router = routers.DefaultRouter()
-router.register(r'users', views.UserViewSet)
-router.register(r'groups', views.GroupViewSet)
+
 router.register(r'medicao_lente', DadosMedicaoViewSet)
 router.register(r'cnpj', CnpjList)
 
@@ -37,11 +35,10 @@ urlpatterns = [
                   re_path(r'^docs/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
                   path('admin/', admin.site.urls),
-                  # path('', include(router.urls)),
                   path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
                   path('', lambda request: redirect('docs/', permanent=True)),
 
-                  path('camera/', include('apps.medicao_lente.urls', namespace='medicao_lente')),
+                  path('api/v1/usuarios/', include('apps.usuarios.urls', namespace='usuarios')),
+                  path('api/v1/lentes/', include('apps.medicao_lente.urls', namespace='medicao_lente')),
 
-              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL,
-                                                                                         document_root=settings.STATIC_ROOT)
+              ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
