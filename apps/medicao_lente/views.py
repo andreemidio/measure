@@ -1,6 +1,3 @@
-import pprint
-
-import requests
 from django.shortcuts import render
 
 from apps.medicao_lente.models import DadosMedicao
@@ -11,56 +8,41 @@ from apps.medicao_lente.models import DadosMedicao
 # @login_required
 
 def salvar_registro(request):
-    # api = "https://medidor-lentes.herokuapp.com/swagger/lentes/medicao/"
-    #
-    # if request.method == "POST":
-    #     data = json.loads(request.POST)
-    #     image = request.FILES.get('image')
-    #     DNP = request.POST.get('DNP')
-    #     altura = request.POST.get('altura')
-    #     # ponte = request.POST.get('ponte')
-    #     olho_direito = request.POST.get('olho_direito')
-    #     olho_esquerdo = request.POST.get('olho_esquerdo')
-    #     OS = request.POST.get('OS')
-    #     cnpj_otica = request.POST.get('cnpj_otica')
-    #     cnpj_laboratorio = request.POST.get('cnpj_laboratorio')
-    #
-    #     medicao = {
-    #         'DNP': DNP,
-    #         'altura': altura,
-    #         'olho_direito': olho_direito,
-    #         'olho_esquerdo': olho_esquerdo,
-    #         'OS': OS,
-    #         'cnpj_otica': cnpj_otica,
-    #         'cnpj_laboratorio': cnpj_laboratorio,
-    #     }
-    #
-    #     files = {'image': (image.name, image.read(), image.content_type)}
-    #
-    #     r = requests.post(api, data=medicao, auth=HTTPBasicAuth('administrador', '123456'), files=files)
-    #
-    #     return render(request, 'app/obras.html')
+    if request.method == "POST":
+        image = request.FILES.get('image')
 
-    if request.method == "GET":
-        # requisicao = requests.get(api)
-        #
-        # try:
-        #     lista = requisicao.json()
-        # except ValueError:
-        #     print("A resposta não chegou com o formato esperado.")
-        #
-        # dicionario = {}
-        # for indice, valor in enumerate(lista):
-        #     dicionario[indice] = valor
+        if request.POST.get('olho_direito') == "on":
+            leituraDireito = True
+        else:
+            leituraEsquerdo = False
 
-        contexto = {
-            "medicoes": {"ddi":"dd"}
+        if request.POST.get('olho_esquerdo') == "on":
+            leituraEsquerdo = True
+        else:
+            leituraEsquerdo = False
+
+        medicao = {
+            'DNP': request.POST.get('DNP'),
+            'altura': request.POST.get('altura'),
+            'leituraDireito': leituraDireito,
+            'leituraEsquerdo': leituraEsquerdo,
+            'OS': request.POST.get('OS'),
+            'cnpjOtica': request.POST.get('cnpj_otica'),
+            'cnpjLaboratorio': request.POST.get('cnpj_laboratorio'),
+            'image': request.FILES.get("image")
         }
 
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(contexto)
+        medicao = DadosMedicao.objects.create(**medicao)
 
-        return render(request, 'app/obras.html', contexto)
+        return render(request, 'app/obras.html')
+
+    medicao = DadosMedicao.objects.last()
+
+    contexto = {
+        "medicoes": medicao
+    }
+
+    return render(request, 'app/obras.html', contexto)
 
 
 # @login_required
