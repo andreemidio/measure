@@ -57,7 +57,6 @@ zipp==3.15.0
 gevent
 psycogreen
 django-db-geventpool
-django-cloudinary-storage==3.6.0
 Brotli==1.0.9
 crispy-bootstrap4==2022.1
 crispy-forms-materialize==0.2
