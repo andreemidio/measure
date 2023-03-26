@@ -1,13 +1,14 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.shortcuts import redirect
+from django.contrib.auth import views as auth_views
 from django.urls import path, include, re_path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import routers, permissions
 
-from apps.medicao_lente.views import DadosMedicaoViewSet, CnpjList
+from apps.medicao_lente import views
+from apps.medicao_lente.viewsets import DadosMedicaoViewSet, CnpjList
 
 router = routers.DefaultRouter()
 
@@ -36,10 +37,17 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('', lambda request: redirect('docs/', permanent=True)),
 
     path('api/v1/usuarios/', include('apps.usuarios.urls', namespace='usuarios')),
     path('api/v1/lentes/', include('apps.medicao_lente.urls', namespace='medicao_lente')),
+
+    path('', auth_views.LoginView.as_view(), name='login'),
+    path('obras/', views.create, name='obras'),
+    path('documentacao/1/', views.documentacao_1, name='documentacao-1'),
+    path('documentacao/2/', views.documentacao_2, name='documentacao-2'),
+    path('documentacao/3/', views.documentacao_3, name='documentacao-3'),
+    path('documentacao/categorias/', views.documentacao_categorias, name='documentacao-categorias'),
+    path('upload/', views.upload, name='upload'),
 
 ]
 

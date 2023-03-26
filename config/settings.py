@@ -43,7 +43,11 @@ INSTALLED_APPS = [
     'django_cpf_cnpj',
     'django_filters',
     'apps.medicao_lente.apps.MedicaoLenteConfig',
-    'apps.usuarios.apps.UsuariosConfig'
+    'apps.usuarios.apps.UsuariosConfig',
+    'materialize',
+    'crispy_bootstrap4',
+    'crispy_forms',
+    'crispy_forms_materialize',
 ]
 
 MIDDLEWARE = [
@@ -61,7 +65,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'template'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -181,6 +185,9 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = os.path.join(BASE_DIR, "/static/")
 
+STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
+
+
 # STATIC_URL = '/static/'
 # STATIC_ROOT = BASE_DIR / "staticfiles"
 # STATIC_ROOT = os.path.join(BASE_DIR, "/static/")
@@ -194,8 +201,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, "/static/")
 
 # from whitenoise.storage import CompressedStaticFilesStorage
 
-STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
-WHITENOISE_MANIFEST_STRICT = False
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
@@ -218,6 +223,8 @@ SWAGGER_SETTINGS = {
 REDOC_SETTINGS = {
     'LAZY_RENDERING': False,
 }
+
+CRISPY_TEMPLATE_PACK = 'materialize_css_forms'
 
 if DEBUG is False:
     SECURE_SSL_REDIRECT = True

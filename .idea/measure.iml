@@ -18,6 +18,7 @@
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9 (measure) (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="app_measure" />
   </component>
   <component name="PyDocumentationSettings">
     <option name="format" value="PLAIN" />
