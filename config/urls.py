@@ -8,6 +8,7 @@ from drf_yasg.views import get_schema_view
 from rest_framework import routers, permissions
 
 from apps.medicao_lente import views
+from apps.medicao_lente.views import salvar_registro
 from apps.medicao_lente.viewsets import DadosMedicaoViewSet, CnpjList
 
 router = routers.DefaultRouter()
@@ -30,11 +31,6 @@ schema_view = get_schema_view(
 
 urlpatterns = [
 
-    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0),
-            name='schema-json'),
-    re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    re_path(r'^docs/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 
@@ -42,12 +38,17 @@ urlpatterns = [
     path('api/v1/lentes/', include('apps.medicao_lente.urls', namespace='medicao_lente')),
 
     path('', auth_views.LoginView.as_view(), name='login'),
-    path('obras/', views.create, name='obras'),
+    path('obras/', salvar_registro, name='obras'),
     path('documentacao/1/', views.documentacao_1, name='documentacao-1'),
     path('documentacao/2/', views.documentacao_2, name='documentacao-2'),
     path('documentacao/3/', views.documentacao_3, name='documentacao-3'),
     path('documentacao/categorias/', views.documentacao_categorias, name='documentacao-categorias'),
     path('upload/', views.upload, name='upload'),
+
+    re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0),
+            name='schema-json'),
+    re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    re_path(r'^docs/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
 ]
 
