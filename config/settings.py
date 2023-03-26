@@ -204,10 +204,8 @@ SWAGGER_SETTINGS = {
             'type': 'basic'
         }
     },
-
 }
 
 REDOC_SETTINGS = {
     'LAZY_RENDERING': False,
-
 }
