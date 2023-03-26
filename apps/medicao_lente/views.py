@@ -1,49 +1,112 @@
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import parsers
-from rest_framework import permissions, viewsets, status
-from rest_framework import renderers
-from rest_framework.response import Response
+import json
+import pprint
 
-# from .serializers import DadosMedicaoSerializer
-from .models import DadosMedicao
-from .serializers import DadosMedicaoSerializer
+import requests
+from django.shortcuts import render
+from requests.auth import HTTPBasicAuth
+from rest_framework.decorators import api_view
 
-
-class DadosMedicaoViewSet(viewsets.ModelViewSet):
-    queryset = DadosMedicao.objects.all()
-    serializer_class = DadosMedicaoSerializer
-    permission_classes = permissions.AllowAny,
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['OS', 'cnpjOtica', 'cnpjLaboratorio']
-    search_fields = ['OS', 'cnpjOtica', 'cnpjLaboratorio']
-    parser_classes = [ parsers.MultiPartParser]
-    renderer_classes = [ renderers.StaticHTMLRenderer, renderers.TemplateHTMLRenderer,
-                        renderers.HTMLFormRenderer, renderers.JSONRenderer,]
+from apps.medicao_lente.models import DadosMedicao
 
 
-class CnpjList(viewsets.ModelViewSet):
-    queryset = DadosMedicao.objects.all()
+@api_view(['POST', 'GET'])
+# @permission_classes([IsAuthenticated])
+# @login_required
 
-    # serializer_class = DadosMedicaoSerializer
+def create(request):
+    api = "https://medidor-lentes.herokuapp.com/swagger/lentes/medicao/"
 
-    def get_queryset(self):
-        return self.queryset.all()
+    if request.method == "POST":
+        data = json.loads(request.POST)
+        image = request.FILES.get('image')
+        DNP = request.POST.get('DNP')
+        altura = request.POST.get('altura')
+        # ponte = request.POST.get('ponte')
+        olho_direito = request.POST.get('olho_direito')
+        olho_esquerdo = request.POST.get('olho_esquerdo')
+        OS = request.POST.get('OS')
+        cnpj_otica = request.POST.get('cnpj_otica')
+        cnpj_laboratorio = request.POST.get('cnpj_laboratorio')
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.queryset
+        medicao = {
+            'DNP': DNP,
+            'altura': altura,
+            'olho_direito': olho_direito,
+            'olho_esquerdo': olho_esquerdo,
+            'OS': OS,
+            'cnpj_otica': cnpj_otica,
+            'cnpj_laboratorio': cnpj_laboratorio,
+        }
 
-        cnpj_optica = self.request.query_params.get('cnpj_optica')
-        os = self.request.query_params.get('os')
-        cnpj_laboratorio = self.request.query_params.get('cnpj_laboratorio')
-        # TODO criar combinação de pesquisas, os e lab, os e loja por exemplo
-        if cnpj_optica:
-            queryset = self.queryset.filter(cnpjOtica=cnpj_optica)
-        elif os:
-            queryset = self.queryset.filter(OS=os)
+        files = {'image': (image.name, image.read(), image.content_type)}
 
-        elif cnpj_laboratorio:
-            queryset = self.queryset.filter(cnpjLaboratorio=cnpj_laboratorio)
+        r = requests.post(api, data=medicao, auth=HTTPBasicAuth('administrador', '123456'), files=files)
 
-        serializer = self.serializer_class(queryset, many=True)
+        return render(request, 'app/obras.html')
 
-        return Response(serializer.data, status.HTTP_200_OK)
+    if request.method == "GET":
+        requisicao = requests.get(api)
+
+        try:
+            lista = requisicao.json()
+        except ValueError:
+            print("A resposta não chegou com o formato esperado.")
+
+        dicionario = {}
+        for indice, valor in enumerate(lista):
+            dicionario[indice] = valor
+
+        contexto = {
+            "medicoes": dicionario
+        }
+
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(contexto)
+
+        return render(request, 'app/obras.html', contexto)
+
+
+# @login_required
+def documentacao_1(request):
+    api = "https://medidor-lentes.herokuapp.com/swagger/lentes/medicao/"
+    # requisicao = requests.get(api)
+    # print(requisicao)
+
+    # try:
+    #     lista = requisicao.json()
+    # except ValueError:
+    #     print("A resposta não chegou com o formato esperado.")
+
+    # dicionario = {}
+    # for indice, valor in enumerate(lista):
+    #     dicionario[indice] = valor
+
+    medicao = DadosMedicao.objects.all().values()
+
+    dicionario = dict(
+        oi="eu sou o goku"
+    )
+    contexto = {
+        "medicoes": medicao
+    }
+    return render(request, 'app/documentacao_1.html', contexto)
+
+
+# @login_required
+def documentacao_2(request):
+    return render(request, 'app/documentacao_2.html')
+
+
+# @login_required
+def documentacao_3(request):
+    return render(request, 'app/documentacao_3.html')
+
+
+# @login_required
+def documentacao_categorias(request):
+    return render(request, 'app/documentacao_categorias.html')
+
+
+# @login_required
+def upload(request):
+    return render(request, 'app/upload.html')
