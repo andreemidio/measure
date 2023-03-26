@@ -11,8 +11,10 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 import os
+from functools import partial
 from pathlib import Path
 
+from dj_database_url import parse as dburl
 from prettyconf import Configuration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -81,16 +83,17 @@ AUTH_USER_MODEL = 'usuarios.Usuarios'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'derf63c6fbj5oa',
-        'USER': 'obldtgtkxtmqrb',
-        'PASSWORD': 'b71a8db5cc461115345a44714d0cfa30db74080e8a98a176a216a865b0c2bdf6',
-        'HOST': 'ec2-3-234-204-26.compute-1.amazonaws.com',
-        'PORT': '5432',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'derf63c6fbj5oa',
+#         'USER': 'obldtgtkxtmqrb',
+#         'PASSWORD': 'b71a8db5cc461115345a44714d0cfa30db74080e8a98a176a216a865b0c2bdf6',
+#         'HOST': 'ec2-3-234-204-26.compute-1.amazonaws.com',
+#         'PORT': '5432',
+#     }
+# }
+
 
 # DATABASES = {
 #     'default': {
@@ -99,14 +102,14 @@ DATABASES = {
 #     }
 # }
 
-# default_db_url = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
-#
+default_db_url = 'sqlite:///' + os.path.join(BASE_DIR, 'medicao_lente.sqlite3')
+
 # if 'localhost' not in ALLOWED_HOSTS:
 #     dburl = partial(dburl, conn_max_age=600, ssl_require=False)
-#
-# DATABASES = {
-#     'default': config('DATABASE_URL', default=default_db_url, cast=dburl),
-# }
+
+DATABASES = {
+    'default': config('DATABASE_URL', default=default_db_url, cast=dburl),
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
