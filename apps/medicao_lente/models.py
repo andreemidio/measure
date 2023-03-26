@@ -46,6 +46,4 @@ class DadosMedicao(models.Model):
 
     class Meta:
         db_table = 'dados_medicao'
-        verbose_name = 'Dado Medicao'
-        verbose_name_plural = 'Dados Medições'
         ordering = ['-dataCriacao']

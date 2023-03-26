@@ -47,18 +47,19 @@ def salvar_registro(request):
 
 # @login_required
 def documentacao_1(request):
-    # medicao = DadosMedicao.objects.all().values()
+    medicao = DadosMedicao.objects.all().values()
 
     dicionario = dict(
         oi="eu sou o goku"
     )
     contexto = {
-        "medicoes": dicionario
+        "medicoes": medicao
     }
     return render(request, 'app/documentacao_1.html', contexto)
 
 
 # @login_required
+
 def documentacao_2(request):
     return render(request, 'app/documentacao_2.html')
 
