@@ -35,8 +35,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
     'drf_yasg',
     'cloudinary',
     'rest_framework',
@@ -204,11 +204,6 @@ WHITENOISE_MANIFEST_STRICT = False
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-# CLOUDINARY_STORAGE = {
-#     # other settings, like credentials
-#     'STATICFILES_MANIFEST_ROOT': os.path.join(BASE_DIR, 'staticfiles')
-# }
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'aemidio',

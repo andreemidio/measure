@@ -58,3 +58,4 @@ gunicorn
 gevent
 psycogreen
 django-db-geventpool
+django-cloudinary-storage
