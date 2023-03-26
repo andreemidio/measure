@@ -179,15 +179,25 @@ USE_TZ = True
 APPEND_SLASH = False
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
+
+# STATIC_URL = '/static/'
 # STATIC_ROOT = BASE_DIR / "staticfiles"
-STATIC_ROOT = os.path.join(BASE_DIR, "/static/")
+# STATIC_ROOT = os.path.join(BASE_DIR, "/static/")
 
 # STATICFILES_DIRS = [BASE_DIR / 'staticfiles', ]
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "staticfiles"),)
+# STATICFILES_DIRS = (os.path.join(BASE_DIR, "staticfiles"),)
 # STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+# STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
 WHITENOISE_MANIFEST_STRICT = False
 
