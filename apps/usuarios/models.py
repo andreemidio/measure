@@ -4,6 +4,7 @@ from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin
 from django.db import models
 
+
 # Create your models here.
 
 
@@ -36,9 +37,9 @@ class Usuarios(AbstractBaseUser, PermissionsMixin):
     cellPhone = models.CharField(max_length=30, blank=True, null=True)
     email = models.EmailField(unique=True, max_length=255)
     resetPassword = models.BooleanField(default=False)
-    isSuperuser = models.BooleanField(default=False, blank=True, null=True)
-    isStaff = models.BooleanField(default=False, blank=True, null=True)
-    isActive = models.BooleanField(default=True)
+    is_superuser = models.BooleanField(default=False, blank=True, null=True)
+    is_staff = models.BooleanField(default=False, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
     dataCriacao = models.DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD = 'email'
