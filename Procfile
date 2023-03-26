@@ -1,1 +1,1 @@
-web:  gunicorn -w $WORKERS -c gunicorn_config.py config.wsgi:application
+web:  gunicorn -w $WORKERS -c gunicorn_config.py config.wsgi:application -b $PORT
