@@ -62,6 +62,5 @@ crispy-bootstrap4==2022.1
 crispy-forms-materialize==0.2
 django-materialize==1.0.1a2
 greenlet==2.0.2
-optional-django==0.3.0
 zope.event==4.6
 zope.interface==6.0
