@@ -47,19 +47,6 @@ def salvar_registro(request):
 
 # @login_required
 def documentacao_1(request):
-    api = "https://medidor-lentes.herokuapp.com/swagger/lentes/medicao/"
-    # requisicao = requests.get(api)
-    # print(requisicao)
-
-    # try:
-    #     lista = requisicao.json()
-    # except ValueError:
-    #     print("A resposta não chegou com o formato esperado.")
-
-    # dicionario = {}
-    # for indice, valor in enumerate(lista):
-    #     dicionario[indice] = valor
-
     medicao = DadosMedicao.objects.all().values()
 
     dicionario = dict(
