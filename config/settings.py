@@ -191,7 +191,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "/static/")
 
 # STATICFILES_DIRS = [BASE_DIR / 'staticfiles', ]
 # STATICFILES_DIRS = (os.path.join(BASE_DIR, "staticfiles"),)
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
@@ -199,6 +199,7 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 # from whitenoise.storage import CompressedStaticFilesStorage
 
+STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
 WHITENOISE_MANIFEST_STRICT = False
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
