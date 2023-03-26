@@ -44,8 +44,8 @@ class DadosMedicao(models.Model):
     def __str__(self):
         return self.OS, self.cnpjOtica
 
-    @property
-    def image_url(self):
-        return (
-            f"https://res.cloudinary.com/diwsy7nll/{self.image}"
-        )
+    class Meta:
+        db_table = 'dados_medicao'
+        verbose_name = 'Dado Medicao'
+        verbose_name_plural = 'Dados Medições'
+        ordering = ['-dataCriacao']

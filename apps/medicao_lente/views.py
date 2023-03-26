@@ -14,7 +14,7 @@ def salvar_registro(request):
         if request.POST.get('olho_direito') == "on":
             leituraDireito = True
         else:
-            leituraEsquerdo = False
+            leituraDireito = False
 
         if request.POST.get('olho_esquerdo') == "on":
             leituraEsquerdo = True
@@ -47,13 +47,13 @@ def salvar_registro(request):
 
 # @login_required
 def documentacao_1(request):
-    medicao = DadosMedicao.objects.all().values()
+    # medicao = DadosMedicao.objects.all().values()
 
     dicionario = dict(
         oi="eu sou o goku"
     )
     contexto = {
-        "medicoes": medicao
+        "medicoes": dicionario
     }
     return render(request, 'app/documentacao_1.html', contexto)
 
