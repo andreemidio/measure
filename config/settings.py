@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'cloudinary',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_cpf_cnpj',
     'django_filters',
     'apps.medicao_lente.apps.MedicaoLenteConfig',
@@ -186,7 +187,6 @@ STATICFILES_DIRS = [
 STATIC_ROOT = os.path.join(BASE_DIR, "/static/")
 
 STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
-
 
 # STATIC_URL = '/static/'
 # STATIC_ROOT = BASE_DIR / "staticfiles"
