@@ -47,8 +47,6 @@ def salvar_registro(request):
             "medicoes": medicao
         }
 
-        print(contexto)
-
         return render(request, 'app/obras.html', contexto)
 
 
