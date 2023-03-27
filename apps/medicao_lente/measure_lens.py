@@ -146,9 +146,9 @@ class MeasurementLens:
             cmY = ((x1 + w1) * 5) / 34.50
             cmX = ((y1 + h1) * 5) / 34.50
             values = dict(
-                horizontal=((x1 + h1) * 5) / 94.9,
-                vertical=((y1 + h1) * 4) / 60.9,
-                diagonal_maior=(diagonal * 61) / 498,
+                horizontal=int(((x1 + h1) * 5) / 94.9),
+                vertical=int(((y1 + h1) * 4) / 60.9),
+                diagonal_maior=int((diagonal * 61) / 498),
                 # oma=raios
 
             )

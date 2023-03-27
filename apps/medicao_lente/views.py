@@ -1,6 +1,14 @@
+import urllib
+import urllib.request
+
+import cv2
+import numpy as np
 from django.shortcuts import render
 
+from apps.medicao_lente.measure_lens import MeasurementLens
 from apps.medicao_lente.models import DadosMedicao
+
+mlens = MeasurementLens()
 
 
 # @api_view(['POST', 'GET'])
@@ -37,6 +45,17 @@ def salvar_registro(request):
         }
 
         medicao = DadosMedicao.objects.create(**medicao)
+
+        id_file_url = urllib.request.urlopen(medicao.image.url)
+        id_file_cloudnary = np.asarray(bytearray(id_file_url.read()), dtype=np.uint8)
+        _image = cv2.imdecode(id_file_cloudnary, cv2.IMREAD_GRAYSCALE)
+
+        lens = mlens.run(image=_image)
+
+        medicao.horizontal = lens["horizontal"]
+        medicao.vertical = lens["vertical"]
+        medicao.diagonalMaior = lens["diagonal_maior"]
+        medicao.save()
 
         return render(request, 'app/obras.html')
 
