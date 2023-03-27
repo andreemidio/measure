@@ -28,127 +28,138 @@ class MeasurementLens:
         return cv2.imread(filename, 0)
 
     def measurement_lens(self, image: np.ndarray, img_bw: np.ndarray, contours):
-        out = image.copy()
 
-        # Step #4
+        try:
 
-        conto = max(contours, key=cv2.contourArea)
+            out = image.copy()
 
-        ref = np.zeros_like(img_bw)
-        cv2.drawContours(ref, contours, 0, 255, 1)
+            # Step #4
 
-        # Step #5
-        M = cv2.moments(contours[0])
-        centroid_x = int(M['m10'] / M['m00'])
-        centroid_y = int(M['m01'] / M['m00'])
+            conto = max(contours, key=cv2.contourArea)
 
-        # Get dimensions of the image
-        width = image.shape[1]
-        height = image.shape[0]
+            ref = np.zeros_like(img_bw)
+            cv2.drawContours(ref, contours, 0, 255, 1)
 
-        (x, y, w, h1) = cv2.boundingRect(contours[0])
+            # Step #5
+            M = cv2.moments(contours[0])
+            centroid_x = int(M['m10'] / M['m00'])
+            centroid_y = int(M['m01'] / M['m00'])
 
-        c = max(contours, key=cv2.contourArea)
-        x1, y1, w1, h1 = cv2.boundingRect(c)
+            # Get dimensions of the image
+            width = image.shape[1]
+            height = image.shape[0]
 
-        # steet = self.getOrientation(c, out)
+            (x, y, w, h1) = cv2.boundingRect(contours[0])
 
-        largura = x + w
-        altura = y + h1
+            c = max(contours, key=cv2.contourArea)
+            x1, y1, w1, h1 = cv2.boundingRect(c)
 
-        rect = cv2.minAreaRect(contours[0])
-        box = cv2.boxPoints(rect)
+            # steet = self.getOrientation(c, out)
 
-        box = np.intp(box)
+            largura = x + w
+            altura = y + h1
 
-        vvv = box[3][0] - box[0][0]
+            rect = cv2.minAreaRect(contours[0])
+            box = cv2.boxPoints(rect)
 
-        cv2.rectangle(out, (x1, y1), (x1 + w1, y1 + h1), (0, 255, 0), 2)
+            box = np.intp(box)
 
-        for i in box:
-            cv2.circle(out, (i[0], i[1]), 3, (0, 255, 0), -1)
+            vvv = box[3][0] - box[0][0]
 
-        list_values_line = list()
+            cv2.rectangle(out, (x1, y1), (x1 + w1, y1 + h1), (0, 255, 0), 2)
 
-        dist = cv2.pointPolygonTest(c, (528, 170), False)
-        dist1 = cv2.pointPolygonTest(c, (842, 430), False)
+            for i in box:
+                cv2.circle(out, (i[0], i[1]), 3, (0, 255, 0), -1)
 
-        # cv2.line(out, (x1, y1), (sss, hhh), (255, 255, 255), 2)
+            list_values_line = list()
 
-        imagem_nova = np.zeros(out.shape, dtype=np.uint8)
+            dist = cv2.pointPolygonTest(c, (528, 170), False)
+            dist1 = cv2.pointPolygonTest(c, (842, 430), False)
 
-        sss = int((x1 + w1) / 2)
-        hhh = int((y1 + h1) / 2)
+            # cv2.line(out, (x1, y1), (sss, hhh), (255, 255, 255), 2)
 
-        cv2.line(imagem_nova, (x1, y1), (x1 + w1, y1 + h1), (255, 255, 255), 2)
-        cv2.line(imagem_nova, (x1 + w1, y1), (x1, y1 + h1), (255, 255, 255), 2)
+            imagem_nova = np.zeros(out.shape, dtype=np.uint8)
 
-        contour = contours[0]
-        pts = contour.reshape(-1, 2)
-        polygon = Polygon(pts)
+            sss = int((x1 + w1) / 2)
+            hhh = int((y1 + h1) / 2)
 
-        line1 = LineString([(x1, y1), (x1 + w1, y1 + h1)])
-        line2 = LineString([(x1 + w1, y1), (x1, y1 + h1)])
+            cv2.line(imagem_nova, (x1, y1), (x1 + w1, y1 + h1), (255, 255, 255), 2)
+            cv2.line(imagem_nova, (x1 + w1, y1), (x1, y1 + h1), (255, 255, 255), 2)
 
-        resulato1 = line1.intersection(polygon)
-        resulato2 = line2.intersection(polygon)
+            contour = contours[0]
+            pts = contour.reshape(-1, 2)
+            polygon = Polygon(pts)
 
-        diagonal: float = float()
+            line1 = LineString([(x1, y1), (x1 + w1, y1 + h1)])
+            line2 = LineString([(x1 + w1, y1), (x1, y1 + h1)])
 
-        if resulato1.length > resulato2.length:
+            resulato1 = line1.intersection(polygon)
+            resulato2 = line2.intersection(polygon)
 
-            diagonal = resulato1.length
+            diagonal: float = float()
 
-            cv2.line(out, (int(resulato1.coords[0][0]), int(resulato1.coords[0][1])),
-                     (int(resulato1.coords[1][0]), int(resulato1.coords[1][1])), (255, 255, 255), 2)
-        else:
+            if resulato1.length > resulato2.length:
 
-            diagonal = resulato2.length
+                diagonal = resulato1.length
 
-            cv2.line(out, (int(resulato2.coords[0][0]), int(resulato2.coords[0][1])),
-                     (int(resulato2.coords[1][0]), int(resulato2.coords[1][1])), (255, 255, 255), 2)
+                cv2.line(out, (int(resulato1.coords[0][0]), int(resulato1.coords[0][1])),
+                         (int(resulato1.coords[1][0]), int(resulato1.coords[1][1])), (255, 255, 255), 2)
+            else:
 
-        # Define total number of angles we want
-        N = 800
-        raios: list = list()
-        # Step #6
-        for i in range(N):
-            # Step #6a
-            tmp = np.zeros_like(img_bw)
+                diagonal = resulato2.length
 
-            # Step #6b
-            theta = i * (360 / N)
-            theta *= np.pi / 180.0
+                cv2.line(out, (int(resulato2.coords[0][0]), int(resulato2.coords[0][1])),
+                         (int(resulato2.coords[1][0]), int(resulato2.coords[1][1])), (255, 255, 255), 2)
 
-            # Step #6c
+            # Define total number of angles we want
+            N = 800
+            raios: list = list()
+            # Step #6
+            for i in range(N):
+                # Step #6a
+                tmp = np.zeros_like(img_bw)
 
-            largura = int(centroid_x + np.cos(theta) * width)
+                # Step #6b
+                theta = i * (360 / N)
+                theta *= np.pi / 180.0
 
-            altura = int(centroid_y - np.sin(theta) * height)
+                # Step #6c
 
-            cv2.line(tmp, (centroid_x, centroid_y), (largura, altura), 255, 5)
+                largura = int(centroid_x + np.cos(theta) * width)
 
-            # Step #6d
+                altura = int(centroid_y - np.sin(theta) * height)
 
-            (row, col) = np.nonzero(np.logical_and(tmp, ref))
+                cv2.line(tmp, (centroid_x, centroid_y), (largura, altura), 255, 5)
 
-            radius = np.sqrt(((col[0] / 2.0) ** 2.0) + ((row[0] / 2.0) ** 2.0))
+                # Step #6d
 
-            raios.append(radius)
-            polar_image = cv2.linearPolar(tmp, (centroid_x, centroid_y), radius, cv2.WARP_FILL_OUTLIERS)
+                (row, col) = np.nonzero(np.logical_and(tmp, ref))
 
-            # Step #6e
-            cv2.line(out, (centroid_x, centroid_y), (col[0], row[0]), (0, 255, 0), 1)
+                radius = np.sqrt(((col[0] / 2.0) ** 2.0) + ((row[0] / 2.0) ** 2.0))
 
-        cmY = ((x1 + w1) * 5) / 34.50
-        cmX = ((y1 + h1) * 5) / 34.50
-        values = dict(
-            horizontal=((x1 + h1) * 5) / 94.9,
-            vertical=((y1 + h1) * 4) / 60.9,
-            diagonal_maior=(diagonal * 61) / 498,
-            # oma=raios
+                raios.append(radius)
+                polar_image = cv2.linearPolar(tmp, (centroid_x, centroid_y), radius, cv2.WARP_FILL_OUTLIERS)
 
-        )
+                # Step #6e
+                cv2.line(out, (centroid_x, centroid_y), (col[0], row[0]), (0, 255, 0), 1)
+
+            cmY = ((x1 + w1) * 5) / 34.50
+            cmX = ((y1 + h1) * 5) / 34.50
+            values = dict(
+                horizontal=((x1 + h1) * 5) / 94.9,
+                vertical=((y1 + h1) * 4) / 60.9,
+                diagonal_maior=(diagonal * 61) / 498,
+                # oma=raios
+
+            )
+        except:
+            values = dict(
+                horizontal=0,
+                vertical=0,
+                diagonal_maior=0,
+                oma=[]
+
+            )
 
         return out, values
 
