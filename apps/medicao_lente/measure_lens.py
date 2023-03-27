@@ -158,9 +158,17 @@ class MeasurementLens:
         except:
             soma_dos_dois_primeiros_raios = 0
 
+        hori = round(((x1 + h1) * 5) / 94.9, 0)
+        if hori == 0:
+            hori = 0
+
+        vert = round(((y1 + h1) * 4) / 60.9, 0)
+        if vert == 0:
+            vert = 0
+
         values = dict(
-            horizontal=round(((x1 + h1) * 5) / 94.9, 0),
-            vertical=round(((y1 + h1) * 4) / 60.9, 0),
+            horizontal=hori,
+            vertical=vert,
             diagonal_maior=soma_dos_dois_primeiros_raios,
             # oma=raios
 
