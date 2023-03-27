@@ -44,18 +44,18 @@ def salvar_registro(request):
             'image': request.FILES.get("image")
         }
 
-        medicao = DadosMedicao.objects.create(**medicao)
+        _medicao = DadosMedicao.objects.create(**medicao)
 
-        id_file_url = urllib.request.urlopen(medicao.image.url)
+        id_file_url = urllib.request.urlopen(_medicao.image.url)
         id_file_cloudnary = np.asarray(bytearray(id_file_url.read()), dtype=np.uint8)
         _image = cv2.imdecode(id_file_cloudnary, cv2.IMREAD_GRAYSCALE)
 
         lens = mlens.run(image=_image)
 
-        medicao.horizontal = lens["horizontal"]
-        medicao.vertical = lens["vertical"]
-        medicao.diagonalMaior = lens["diagonal_maior"]
-        medicao.save()
+        _medicao.horizontal = lens["horizontal"]
+        _medicao.vertical = lens["vertical"]
+        _medicao.diagonalMaior = lens["diagonal_maior"]
+        _medicao.save()
 
         return render(request, 'app/obras.html')
 
