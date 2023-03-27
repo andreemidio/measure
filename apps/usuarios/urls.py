@@ -14,4 +14,4 @@ urlpatterns = [
     path(r'', include(router.urls)),
     path('api-token-auth/', views.obtain_auth_token)
 
-]
+]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
