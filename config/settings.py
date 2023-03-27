@@ -202,9 +202,9 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'acert',
-    'API_KEY': '117912794282771',
-    'API_SECRET': 'DKKYKKRQE4B1A__W9h71W4AD6mQ'
+    'CLOUD_NAME': 'aemidio',
+    'API_KEY': '967598265435156',
+    'API_SECRET': 'kQj_rNAdmA8XezKr9SnDBYE9tnc'
 }
 
 SWAGGER_SETTINGS = {
