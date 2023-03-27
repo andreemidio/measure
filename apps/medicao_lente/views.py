@@ -29,7 +29,7 @@ def salvar_registro(request):
         else:
             leituraEsquerdo = False
 
-        dnp = None
+        dnp = 0
         if request.POST.get('DNP'):
             dnp = request.POST.get('DNP')
 
