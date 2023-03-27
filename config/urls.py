@@ -31,12 +31,6 @@ schema_view = get_schema_view(
 
 urlpatterns = [
 
-    path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-
-    path('api/v1/usuarios/', include('apps.usuarios.urls', namespace='usuarios')),
-    path('api/v1/lentes/', include('apps.medicao_lente.urls', namespace='medicao_lente')),
-
     path('', auth_views.LoginView.as_view(), name='login'),
     path('obras/', salvar_registro, name='obras'),
     path('documentacao/1/', views.documentacao_1, name='documentacao-1'),
@@ -44,6 +38,12 @@ urlpatterns = [
     path('documentacao/3/', views.documentacao_3, name='documentacao-3'),
     path('documentacao/categorias/', views.documentacao_categorias, name='documentacao-categorias'),
     path('upload/', views.upload, name='upload'),
+
+    path('admin/', admin.site.urls),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+
+    path('api/v1/usuarios/', include('apps.usuarios.urls', namespace='usuarios')),
+    path('api/v1/lentes/', include('apps.medicao_lente.urls', namespace='medicao_lente')),
 
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0),
             name='schema-json'),
