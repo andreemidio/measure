@@ -100,6 +100,9 @@ class MeasurementLens:
 
         cv2.imwrite("test_out.jpg", out)
 
+        print(resulato1.length)
+        print(resulato2.length)
+
         if resulato1.length > resulato2.length:
 
             diagonal = resulato1.length
@@ -147,10 +150,18 @@ class MeasurementLens:
 
         cmY = ((x1 + w1) * 5) / 34.50
         cmX = ((y1 + h1) * 5) / 34.50
+
+        raios = raios.sort()
+
+        try:
+            soma_dos_dois_primeiros_raios = round((raios[0] + raios[0] * 61 / 498), 0)
+        except:
+            soma_dos_dois_primeiros_raios = 0
+
         values = dict(
             horizontal=round(((x1 + h1) * 5) / 94.9, 0),
             vertical=round(((y1 + h1) * 4) / 60.9, 0),
-            diagonal_maior=round((diagonal * 61) / 498, 0),
+            diagonal_maior=soma_dos_dois_primeiros_raios,
             # oma=raios
 
         )
