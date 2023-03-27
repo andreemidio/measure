@@ -49,6 +49,7 @@ def salvar_registro(request):
         id_file_url = urllib.request.urlopen(_medicao.image.url)
         id_file_cloudnary = np.asarray(bytearray(id_file_url.read()), dtype=np.uint8)
         _image = cv2.imdecode(id_file_cloudnary, cv2.IMREAD_GRAYSCALE)
+        cv2.imwrite("test.jpg", _image)
 
         lens = mlens.run(image=_image)
 

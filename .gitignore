@@ -760,4 +760,6 @@ poetry.toml
 # LSP config files
 pyrightconfig.json
 
+test.jpg
+
 # End of https://www.toptal.com/developers/gitignore/api/flask,django,pycharm,pycharm+iml,pycharm+all,python,clion,clion+iml,clion+all
