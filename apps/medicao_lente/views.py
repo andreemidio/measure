@@ -21,8 +21,12 @@ def salvar_registro(request):
         else:
             leituraEsquerdo = False
 
+        dnp = None
+        if request.POST.get('DNP'):
+            dnp = request.POST.get('DNP')
+
         medicao = {
-            'DNP': request.POST.get('DNP'),
+            'DNP': int(dnp),
             'altura': request.POST.get('altura'),
             'leituraDireito': leituraDireito,
             'leituraEsquerdo': leituraEsquerdo,
@@ -36,22 +40,22 @@ def salvar_registro(request):
 
         return render(request, 'app/obras.html')
 
-    medicao = DadosMedicao.objects.last()
+    if request.method == "GET":
+        medicao = DadosMedicao.objects.values()
 
-    contexto = {
-        "medicoes": medicao
-    }
+        contexto = {
+            "medicoes": medicao
+        }
 
-    return render(request, 'app/obras.html', contexto)
+        print(contexto)
+
+        return render(request, 'app/obras.html', contexto)
 
 
 # @login_required
 def documentacao_1(request):
     medicao = DadosMedicao.objects.all().values()
 
-    dicionario = dict(
-        oi="eu sou o goku"
-    )
     contexto = {
         "medicoes": medicao
     }

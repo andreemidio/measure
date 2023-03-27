@@ -10,7 +10,7 @@
                     <input type="file" id="fileupload" placeholder="Select file" name="image">
                 </div>
 
-                {% for indice, medicao in medicoes.items %}
+                {% for  medicao in medicoes %}
                     {% if forloop.last %}
                         <div class="input" type="text">
                             <div>
@@ -27,7 +27,7 @@
                         <div class="input" type="text">
                             <div>
                                 <h5 placeholder="HORIZONTAL" style="color: black;" id="first_name7" type="text"
-                                    class="validate" name="horizontal">Diagonal Maior {{ medicao.diagonal_maior }}</h5>
+                                    class="validate" name="horizontal">Diagonal Maior {{ medicao.diagonalMaior }}</h5>
                             </div>
                         </div>
                     {% endif %}
