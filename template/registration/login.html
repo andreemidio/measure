@@ -1,0 +1,44 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+<div class="splash"><div class="logo"></div></div>
+<div class="container">
+	<div class="form">
+		<div class="logo"></div>
+		{% if messages %}
+			{% for message in messages %}
+				<div class="alert-danger">{{ message }}</div>
+			{% endfor %}
+		{% endif %}
+
+	  <form method="post">
+
+		<h1 class="" style="text-align: center;">Login</h1>
+		{% csrf_token %}
+		{{ form.as_p }}
+		<button type="submit" class="cta cta1">Login</button>
+	  </form>
+	</div>
+</div>
+
+<script>
+	setTimeout(()=> {
+		const splashScreen = document.querySelector('.splash')
+		splashScreen.style.opacity = 0
+		splashScreen.style.height = 0
+	}, 1000)
+</script>
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		var elems = document.querySelectorAll('select');
+		var instances = M.FormSelect.init(elems, options);
+	  });
+	
+	  // Or with jQuery
+	
+	  $(document).ready(function(){
+		$('select').formSelect();
+	  });
+			
+</script>
+{% endblock %}
