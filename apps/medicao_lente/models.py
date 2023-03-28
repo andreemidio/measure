@@ -33,6 +33,7 @@ class DadosMedicao(models.Model):
     vertical = models.FloatField(null=True, blank=True)
     diagonalMaior = models.FloatField(null=True, blank=True)
     DNP = models.IntegerField(null=True, blank=True)
+    ponte = models.IntegerField(null=True, blank=True)
     altura = models.IntegerField(null=True, blank=True)
     leituraDireito = models.BooleanField(null=True, blank=True)
     leituraEsquerdo = models.BooleanField(null=True, blank=True)
