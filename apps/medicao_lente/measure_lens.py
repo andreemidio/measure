@@ -155,11 +155,11 @@ class MeasurementLens:
         except:
             soma_dos_dois_primeiros_raios = 0
 
-        hori = round((x1 + h1) * 5 / 34.5, 0)
+        hori = round((0 + w1) * 5 / 34.5, 0)
         if hori == 0:
             hori = 0
 
-        vert = round((y1 + h1) * 5 / 34.5, 0)
+        vert = round((0 + h1) * 5 / 34.5, 0)
         if vert == 0:
             vert = 0
 
