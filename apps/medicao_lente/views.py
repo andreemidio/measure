@@ -34,8 +34,9 @@ def salvar_registro(request):
             dnp = request.POST.get('DNP')
 
         medicao = {
-            'DNP': int(dnp),
-            'altura': request.POST.get('altura'),
+            'DNP': int(dnp) or 0,
+            'altura': request.POST.get('altura') or 0,
+            'ponte': request.POST.get('ponte') or 0,
             'leituraDireito': leituraDireito,
             'leituraEsquerdo': leituraEsquerdo,
             'OS': request.POST.get('OS'),
