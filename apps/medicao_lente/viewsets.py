@@ -1,6 +1,5 @@
-import cv2
-import numpy as np
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import authentication
 from rest_framework import parsers
 from rest_framework import permissions, viewsets, status
 from rest_framework import renderers
@@ -17,7 +16,9 @@ mlens = MeasurementLens()
 class DadosMedicaoViewSet(viewsets.ModelViewSet):
     queryset = DadosMedicao.objects.all()
     serializer_class = DadosMedicaoSerializer
-    permission_classes = permissions.AllowAny,
+    # authentication_classes = [authentication.TokenAuthentication]
+    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['OS', 'cnpjOtica', 'cnpjLaboratorio']
     search_fields = ['OS', 'cnpjOtica', 'cnpjLaboratorio']
@@ -25,25 +26,6 @@ class DadosMedicaoViewSet(viewsets.ModelViewSet):
     renderer_classes = [renderers.StaticHTMLRenderer, renderers.TemplateHTMLRenderer,
                         renderers.HTMLFormRenderer, renderers.JSONRenderer, ]
 
-    # def create(self, request, *args, **kwargs):
-    #     # def create(self, validated_data):
-    #     data = request.data['image'].read()
-    #     _image = np.asarray(bytearray(data), dtype='uint8')
-    #     _image = cv2.imdecode(_image, cv2.IMREAD_GRAYSCALE)
-    #
-    #     lens = mlens.run(image=_image)
-    #
-    #     request.data["horizontal"] = lens["horizontal"]
-    #     request.data["vertical"] = lens["vertical"]
-    #     request.data["diagonalMaior"] = lens["diagonal_maior"]
-    #
-    #     se = self.serializer_class(data=request.data)
-    #     se.is_valid(raise_exception=True)
-    #     se.save()
-    #
-    #     # dado_medicao = DadosMedicao.objects.create(**request.data)
-    #
-    #     return Response(se.data)
 
 
 class CnpjList(viewsets.ModelViewSet):

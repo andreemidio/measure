@@ -1,7 +1,8 @@
+from typing import Tuple
+
 import cv2
 import numpy as np
 from shapely import LineString
-
 from shapely.geometry import Polygon
 
 
@@ -9,6 +10,38 @@ class MeasurementLens:
 
     def __int__(self):
         ...
+
+    def cart2polar(self, x, y):
+        r = np.sqrt(x ** 2 + y ** 2)
+        theta = np.arctan2(y, x)
+        return r, theta
+
+    def get_aruco(self, image: np.ndarray) -> Tuple[float, int, int]:
+
+        dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50)
+        parameters = cv2.aruco.DetectorParameters()
+        detector = cv2.aruco.ArucoDetector(dictionary, parameters)
+
+        markerCorners, markerIds, rejectedCandidates = detector.detectMarkers(image)
+
+        perimeter_aruco = cv2.arcLength(markerCorners[0], True)
+
+        proporcao_aruco = (perimeter_aruco / (4 * 4))
+
+        (x, y), (width, height), angle = cv2.minAreaRect(markerCorners[0][0])
+
+        x, y, h, w = cv2.boundingRect(markerCorners[0])
+
+        largura_aruco = int((width / proporcao_aruco) * 10)
+        altura_aruco = int((height / proporcao_aruco) * 10)
+
+        # cv2.rectangle(image_copy, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+        return proporcao_aruco, altura_aruco, largura_aruco
+
+    def cart_to_pol(self, x, y, x_c=0, y_c=0, deg=True):
+        complex_format = x - x_c + 1j * (y - y_c)
+        return np.abs(complex_format), np.angle(complex_format, deg=deg)
 
     def _image_processing(self, image: np.ndarray) -> np.ndarray:
         _blur = cv2.GaussianBlur(image, (7, 7), 0)
@@ -29,9 +62,11 @@ class MeasurementLens:
 
     def measurement_lens(self, image: np.ndarray, img_bw: np.ndarray, contours):
 
-        # try:
+        proporcao, _, _ = self.get_aruco(image)
 
         out = image.copy()
+        # out = cv2.cvtColor(out, cv2.COLOR_BGR2GRAY)
+        # img_bw = cv2.cvtColor(img_bw, cv2.COLOR_BGR2GRAY)
 
         # Step #4
 
@@ -54,8 +89,6 @@ class MeasurementLens:
         c = max(contours, key=cv2.contourArea)
         x1, y1, w1, h1 = cv2.boundingRect(c)
 
-        # steet = self.getOrientation(c, out)
-
         largura = x + w
         altura = y + h1
 
@@ -72,9 +105,6 @@ class MeasurementLens:
             cv2.circle(out, (i[0], i[1]), 3, (0, 255, 0), -1)
 
         list_values_line = list()
-
-        dist = cv2.pointPolygonTest(c, (528, 170), False)
-        dist1 = cv2.pointPolygonTest(c, (842, 430), False)
 
         # cv2.line(out, (x1, y1), (sss, hhh), (255, 255, 255), 2)
 
@@ -98,25 +128,22 @@ class MeasurementLens:
 
         diagonal: float = float()
 
-        cv2.imwrite("test_out.jpg", out)
-
         if resulato1.length > resulato2.length:
-
             diagonal = resulato1.length
 
-            # cv2.line(out, (int(resulato1.coords[0][0]), int(resulato1.coords[0][1])),
-            #          (int(resulato1.coords[1][0]), int(resulato1.coords[1][1])), (255, 255, 255), 2)
-        else:
-
+            cv2.line(out, (int(resulato1.coords[0][0]), int(resulato1.coords[0][1])),
+                     (int(resulato1.coords[1][0]), int(resulato1.coords[1][1])), (255, 255, 255), 2)
+        if resulato1.length < resulato2.length:
             diagonal = resulato2.length
-            #
-            # cv2.line(out, (int(resulato2.coords[0][0]), int(resulato2.coords[0][1])),
-            #          (int(resulato2.coords[1][0]), int(resulato2.coords[1][1])), (255, 255, 255), 2)
+
+            cv2.line(out, (int(resulato2.coords[0][0]), int(resulato2.coords[0][1])),
+                     (int(resulato2.coords[1][0]), int(resulato2.coords[1][1])), (255, 255, 255), 2)
 
         # Define total number of angles we want
         N = 800
         raios: list = list()
         # Step #6
+
         for i in range(N):
             # Step #6a
             tmp = np.zeros_like(img_bw)
@@ -137,50 +164,28 @@ class MeasurementLens:
 
             (row, col) = np.nonzero(np.logical_and(tmp, ref))
 
-            radius = np.sqrt(((col[0] / 2.0) ** 2.0) + ((row[0] / 2.0) ** 2.0))
+            radius = np.sqrt(((col[0] - centroid_x) ** 2.0) + ((row[0] - centroid_y) ** 2.0))
 
-            raios.append(radius)
-            polar_image = cv2.linearPolar(tmp, (centroid_x, centroid_y), radius, cv2.WARP_FILL_OUTLIERS)
+            # r, theta = self.cart2polar(col[0], row[0])
+            r, theta = self.cart_to_pol(col[0], row[0], x_c=centroid_x, y_c=centroid_y)
+
+            # raios.append(round((r * 5) / 2))
+            raios.append(round(radius))
 
             # Step #6e
             cv2.line(out, (centroid_x, centroid_y), (col[0], row[0]), (0, 255, 0), 1)
 
-        cmY = ((x1 + w1) * 5) / 34.50
-        cmX = ((y1 + h1) * 5) / 34.50
-
-        raios = sorted(raios, key=lambda x: float(x))
-
-        try:
-            soma_dos_dois_primeiros_raios = round(((raios[0] + raios[0]) * 5 / 34.5), 0)
-        except:
-            soma_dos_dois_primeiros_raios = 0
-
-        hori = round((0 + w1) * 5 / 34.5, 0)
-        if hori == 0:
-            hori = 0
-
-        vert = round((0 + h1) * 5 / 34.5, 0)
-        if vert == 0:
-            vert = 0
+        cmY = round(((x1 + w1) * 5) / 34.50)
+        cmX = round(((y1 + h1) * 5) / 34.50)
 
         values = dict(
-            horizontal=hori,
-            vertical=vert,
-            diagonal_maior=soma_dos_dois_primeiros_raios,
-            # oma=raios
-
+            horizontal=int((w1 / (proporcao + 10)) * 10),
+            vertical=int((h1 / (proporcao + 10)) * 10),
+            # horizontal=cmX,
+            # veritical=cmY,
+            diagonal=int((diagonal / (proporcao + 10)) * 10),
+            oma=raios
         )
-
-        print(values)
-        # except Exception as e:
-        #     print(str(e))
-        #     values = dict(
-        #         horizontal=0,
-        #         vertical=0,
-        #         diagonal_maior=0,
-        #         oma=[]
-        #
-        #     )
 
         return out, values
 
@@ -191,8 +196,9 @@ class MeasurementLens:
 
         out = image.copy()
 
-        me, values = self.measurement_lens(image=image, img_bw=img_bw, contours=contours)
-        return values
+        me, values = self.measurement_lens(image=out, img_bw=img_bw, contours=contours)
+
+        return me, values
 
 
 if __name__ == '__main__':

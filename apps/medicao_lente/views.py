@@ -52,11 +52,11 @@ def salvar_registro(request):
         _image = cv2.imdecode(id_file_cloudnary, cv2.IMREAD_GRAYSCALE)
         cv2.imwrite("test.jpg", _image)
 
-        lens = mlens.run(image=_image)
+        _, lens = mlens.run(image=_image)
 
         _medicao.horizontal = lens["horizontal"]
         _medicao.vertical = lens["vertical"]
-        _medicao.diagonalMaior = lens["diagonal_maior"]
+        _medicao.diagonalMaior = lens["diagonal"]
         _medicao.save()
 
         return render(request, 'app/obras.html')

@@ -56,7 +56,7 @@ class DadosMedicaoSerializer(serializers.ModelSerializer):
         id_file_cloudnary = np.asarray(bytearray(id_file_url.read()), dtype=np.uint8)
         _image = cv2.imdecode(id_file_cloudnary, cv2.IMREAD_GRAYSCALE)
 
-        lens = mlens.run(image=_image)
+        _, lens = mlens.run(image=_image)
 
         # validated_data["horizontal"] = lens["horizontal"]
         # validated_data["vertical"] = lens["vertical"]
@@ -64,7 +64,7 @@ class DadosMedicaoSerializer(serializers.ModelSerializer):
 
         dado_medicao.horizontal = lens["horizontal"]
         dado_medicao.vertical = lens["vertical"]
-        dado_medicao.diagonalMaior = lens["diagonal_maior"]
+        dado_medicao.diagonalMaior = lens["diagonal"]
         dado_medicao.save()
 
         return dado_medicao
