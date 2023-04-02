@@ -16,9 +16,9 @@ mlens = MeasurementLens()
 class DadosMedicaoViewSet(viewsets.ModelViewSet):
     queryset = DadosMedicao.objects.all()
     serializer_class = DadosMedicaoSerializer
-    # authentication_classes = [authentication.TokenAuthentication]
-    # permission_classes = (permissions.IsAuthenticated,)
-    permission_classes = (permissions.AllowAny,)
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.AllowAny,)
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['OS', 'cnpjOtica', 'cnpjLaboratorio']
     search_fields = ['OS', 'cnpjOtica', 'cnpjLaboratorio']
