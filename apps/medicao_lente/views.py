@@ -57,6 +57,8 @@ def salvar_registro(request):
         _medicao.horizontal = lens["horizontal"]
         _medicao.vertical = lens["vertical"]
         _medicao.diagonalMaior = lens["diagonal"]
+        _medicao.diagonalMaior = lens["diagonal"]
+        _medicao.oma = lens["oma"]
         _medicao.save()
 
         return render(request, 'app/obras.html')

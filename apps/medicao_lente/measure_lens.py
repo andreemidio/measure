@@ -178,13 +178,19 @@ class MeasurementLens:
         cmY = round(((x1 + w1) * 5) / 34.50)
         cmX = round(((y1 + h1) * 5) / 34.50)
 
+        variavel_texto = ""
+        for a in [raios[i:i + 10] for (i) in range(0, len(raios), 10)]:
+            for lkk in a:
+                variavel_texto = variavel_texto + f"{lkk};"
+            variavel_texto = variavel_texto + "\n"
+
         values = dict(
             horizontal=int((w1 / (proporcao + 10)) * 10),
             vertical=int((h1 / (proporcao + 10)) * 10),
             # horizontal=cmX,
             # veritical=cmY,
             diagonal=int((diagonal / (proporcao + 10)) * 10),
-            oma=raios
+            oma=variavel_texto
         )
 
         return out, values

@@ -32,6 +32,7 @@ class DadosMedicao(models.Model):
     horizontal = models.FloatField(null=True, blank=True)
     vertical = models.FloatField(null=True, blank=True)
     diagonalMaior = models.FloatField(null=True, blank=True)
+    oma = models.TextField(null=True, blank=True)
     DNP = models.IntegerField(null=True, blank=True)
     ponte = models.IntegerField(null=True, blank=True)
     altura = models.IntegerField(null=True, blank=True)

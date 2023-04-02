@@ -36,18 +36,22 @@ class DadosMedicaoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DadosMedicao
-        fields = "__all__"
-        # fields = [
-        #     "horizontal",
-        #     "vertical",
-        #     "diagonalMaior",
-        #     "OS",
-        #     "DNP",
-        #     "altura",
-        #     "leituraDireito",
-        #     "leituraEsquerdo",
-        #     "image"
-        # ]
+        # fields = "__all__"
+        fields = [
+            "id",
+            "OS",
+            "horizontal",
+            "vertical",
+            "diagonalMaior",
+            "DNP",
+            "ponte",
+            "altura",
+            "leituraDireito",
+            "leituraEsquerdo",
+            "image",
+            "cnpjOtica",
+            "cnpjLaboratorio",
+        ]
 
     def create(self, validated_data):
         dado_medicao = DadosMedicao.objects.create(**validated_data)
@@ -65,6 +69,7 @@ class DadosMedicaoSerializer(serializers.ModelSerializer):
         dado_medicao.horizontal = lens["horizontal"]
         dado_medicao.vertical = lens["vertical"]
         dado_medicao.diagonalMaior = lens["diagonal"]
+        dado_medicao.oma = lens["oma"]
         dado_medicao.save()
 
         return dado_medicao
