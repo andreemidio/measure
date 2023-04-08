@@ -67,7 +67,7 @@ def salvar_registro(request):
         medicao = DadosMedicao.objects.values()
 
         contexto = {
-            "medicoes": medicao
+            "medicoes": [medicao[0]]
         }
 
         return render(request, 'app/obras.html', contexto)
