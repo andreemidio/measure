@@ -1,3 +1,4 @@
+from math import floor
 from typing import Tuple
 
 import cv2
@@ -289,9 +290,9 @@ class MeasurementLens:
             cv2.line(out, (centroid_x, centroid_y), (col[0], row[0]), (0, 255, 0), 1)
 
         values = dict(
-            horizontal=round(largura_lente_pixel * scale),
-            vertical=round(altura_lente_pixel * scale),
-            diagonal=round(diagonal * scale),
+            horizontal=floor(largura_lente_pixel * scale),
+            vertical=floor(altura_lente_pixel * scale),
+            diagonal=floor(diagonal * scale),
             oma=raios
         )
 
