@@ -2,7 +2,7 @@ from typing import Tuple
 
 import cv2
 import numpy as np
-from shapely import LineString
+from shapely import LineString, Point
 from shapely.geometry import Polygon
 
 
@@ -11,10 +11,128 @@ class MeasurementLens:
     def __int__(self):
         ...
 
+    def _resize_image(self, image: np.ndarray, size: Tuple[int, int]):
+        h, w = image.shape[:2]
+        sh, sw = size
+
+        # interpolation method
+        if h > sh or w > sw:  # shrinking image
+            interp = cv2.INTER_AREA
+        else:  # stretching image
+            interp = cv2.INTER_CUBIC
+
+        # aspect ratio of image
+        aspect = w / h  # if on Python 2, you might need to cast as a float: float(w)/h
+
+        # compute scaling and pad sizing
+        if aspect > 1:  # horizontal image
+            new_w = sw
+            new_h = np.round(new_w / aspect).astype(int)
+            pad_vert = (sh - new_h) / 2
+            _, pad_bot = np.floor(pad_vert).astype(int), np.ceil(pad_vert).astype(int)
+            _, pad_right = 0, 0
+        elif aspect < 1:  # vertical image
+            new_h = sh
+            new_w = np.round(new_h * aspect).astype(int)
+            pad_horz = (sw - new_w) / 2
+            _, pad_right = np.floor(pad_horz).astype(int), np.ceil(pad_horz).astype(int)
+            _, pad_bot = 0, 0
+        else:  # square image
+            new_h, new_w = sh, sw
+            _, pad_right, pad_top, pad_bot = 0, 0, 0, 0
+
+        # scale and pad
+        scaled_img = cv2.resize(image, (new_w, new_h), interpolation=interp)
+
+        return scaled_img
+
     def cart2polar(self, x, y):
         r = np.sqrt(x ** 2 + y ** 2)
         theta = np.arctan2(y, x)
         return r, theta
+
+    def _max_value(self, points):
+        max_x1, max_x2 = 0, 0
+        for contour in points:
+            for point in contour:
+                x = point[0][0]
+                if x > max_x1:
+                    max_x2 = max_x1
+                    max_x1 = x
+                elif x > max_x2:
+                    max_x2 = x
+
+        return max_x1, max_x2
+
+    def _rotate_image(self, image: np.ndarray, points) -> np.ndarray:
+        resultado_image = image.copy()
+        height, width, channels = image.shape
+
+        if height > width:
+            part_width = height // 3
+
+            print(points)
+
+            print("Height Ganhou")
+
+            # Slice the image into three parts
+            part1 = img[:part_width, :]
+            part2 = img[part_width:part_width * 2, :]
+            part3 = img[part_width * 2:, :]
+
+            max_value_in_y_axis = np.max(points)
+
+            p = np.vstack([contour.reshape(-1, 2) for contour in points])
+
+            max_x, max_y = np.max(p, axis=0)
+
+            cv2.namedWindow('ksks', cv2.WINDOW_KEEPRATIO)
+            cv2.imshow("part1", part1)
+            cv2.imshow("part2", part2)
+            cv2.imshow("part3", part3)
+            cv2.waitKey(0)
+
+        if width > height:
+            part_width = width // 3
+            print(points)
+            print("Width Ganhou")
+
+            # Find the two highest X values
+
+            p = np.vstack([contour.reshape(-1, 2) for contour in points])
+
+            max_x, max_y = np.max(p, axis=0)
+
+            # max_vales = np.ndarray([int(max_x), int(max_y)])
+            #
+            # max_vales.reshape(-1, 2)
+
+            p1 = Point(max_x, max_y)
+
+            # Slice the image into three parts
+            # part1 = img[:, :part_width]
+            part1 = int(width / 3)
+            part2 = img[:, part_width:part_width * 2]
+            part3 = img[:, part_width * 2:]
+
+            # pts_image_1 = part1.reshape(-1, 2)
+            # polygon_image_1 = Polygon(pts_image_1)
+            pts_image_2 = part1.reshape(-1, 2)
+            polygon_image_2 = Polygon(pts_image_2)
+            pts_image_3 = part1.reshape(-1, 2)
+            polygon_image_3 = Polygon(pts_image_3)
+
+            # resultado_image1 = polygon_image_1.contains(p1)
+            resultado_image2 = polygon_image_2.contains(p1)
+            resultado_image3 = polygon_image_3.contains(p1)
+
+            cv2.namedWindow('ksks', cv2.WINDOW_KEEPRATIO)
+            cv2.imshow("part1", part1)
+            cv2.imshow("part2", part2)
+            cv2.imshow("part3", part3)
+            cv2.waitKey(0)
+
+        return image
 
     def get_aruco(self, image: np.ndarray) -> Tuple[float, int, int]:
 
@@ -26,21 +144,15 @@ class MeasurementLens:
 
         perimeter_aruco = cv2.arcLength(markerCorners[0], True)
 
-        proporcao_aruco = (perimeter_aruco / (4 * 4))
+        minRect = cv2.minAreaRect(markerCorners[0][0])
+        scale = 32 / (float(float(minRect[1][0]) + float(minRect[1][1])) / 2)
 
-        (x, y), (width, height), angle = cv2.minAreaRect(markerCorners[0][0])
+        # image_result = self._rotate_image(image, markerCorners)
 
-        x, y, h, w = cv2.boundingRect(markerCorners[0])
+        return scale
 
-        largura_aruco = int((width / proporcao_aruco) * 10)
-        altura_aruco = int((height / proporcao_aruco) * 10)
-
-        # cv2.rectangle(image_copy, (x, y), (x + w, y + h), (0, 255, 0), 2)
-
-        return proporcao_aruco, altura_aruco, largura_aruco
-
-    def cart_to_pol(self, x, y, x_c=0, y_c=0, deg=True):
-        complex_format = x - x_c + 1j * (y - y_c)
+    def _cartesian_to_polar(self, x, y, x_c=0, y_c=0, deg=True):
+        complex_format = x - (-1 * x_c) + 1j * ((-1 * y) - (-1 * y_c))
         return np.abs(complex_format), np.angle(complex_format, deg=deg)
 
     def _image_processing(self, image: np.ndarray) -> np.ndarray:
@@ -62,7 +174,8 @@ class MeasurementLens:
 
     def measurement_lens(self, image: np.ndarray, img_bw: np.ndarray, contours):
 
-        proporcao, _, _ = self.get_aruco(image)
+        # proporcao, altura_aruco_pixel, largura_aruco_pixel, fator = self.get_aruco(image)
+        scale = self.get_aruco(image)
 
         out = image.copy()
         # out = cv2.cvtColor(out, cv2.COLOR_BGR2GRAY)
@@ -84,13 +197,13 @@ class MeasurementLens:
         width = image.shape[1]
         height = image.shape[0]
 
-        (x, y, w, h1) = cv2.boundingRect(contours[0])
+        (x, y, w, h) = cv2.boundingRect(contours[0])
 
         c = max(contours, key=cv2.contourArea)
-        x1, y1, w1, h1 = cv2.boundingRect(c)
+        x1, y1, largura_lente_pixel, altura_lente_pixel = cv2.boundingRect(c)
 
         largura = x + w
-        altura = y + h1
+        altura = y + altura_lente_pixel
 
         rect = cv2.minAreaRect(contours[0])
         box = cv2.boxPoints(rect)
@@ -99,7 +212,7 @@ class MeasurementLens:
 
         vvv = box[3][0] - box[0][0]
 
-        cv2.rectangle(out, (x1, y1), (x1 + w1, y1 + h1), (0, 255, 0), 2)
+        # cv2.rectangle(out, (x1, y1), (x1 + largura_lente_pixel, y1 + altura_lente_pixel), (0, 255, 0), 2)
 
         for i in box:
             cv2.circle(out, (i[0], i[1]), 3, (0, 255, 0), -1)
@@ -110,18 +223,18 @@ class MeasurementLens:
 
         imagem_nova = np.zeros(out.shape, dtype=np.uint8)
 
-        sss = int((x1 + w1) / 2)
-        hhh = int((y1 + h1) / 2)
+        sss = int((x1 + largura_lente_pixel) / 2)
+        hhh = int((y1 + altura_lente_pixel) / 2)
 
-        cv2.line(imagem_nova, (x1, y1), (x1 + w1, y1 + h1), (255, 255, 255), 2)
-        cv2.line(imagem_nova, (x1 + w1, y1), (x1, y1 + h1), (255, 255, 255), 2)
+        cv2.line(imagem_nova, (x1, y1), (x1 + largura_lente_pixel, y1 + altura_lente_pixel), (255, 255, 255), 2)
+        cv2.line(imagem_nova, (x1 + largura_lente_pixel, y1), (x1, y1 + altura_lente_pixel), (255, 255, 255), 2)
 
         contour = contours[0]
         pts = contour.reshape(-1, 2)
         polygon = Polygon(pts)
 
-        line1 = LineString([(x1, y1), (x1 + w1, y1 + h1)])
-        line2 = LineString([(x1 + w1, y1), (x1, y1 + h1)])
+        line1 = LineString([(x1, y1), (x1 + largura_lente_pixel, y1 + altura_lente_pixel)])
+        line2 = LineString([(x1 + largura_lente_pixel, y1), (x1, y1 + altura_lente_pixel)])
 
         resulato1 = line1.intersection(polygon)
         resulato2 = line2.intersection(polygon)
@@ -140,7 +253,7 @@ class MeasurementLens:
                      (int(resulato2.coords[1][0]), int(resulato2.coords[1][1])), (255, 255, 255), 2)
 
         # Define total number of angles we want
-        N = 800
+        N = 360
         raios: list = list()
         # Step #6
 
@@ -167,7 +280,7 @@ class MeasurementLens:
             radius = np.sqrt(((col[0] - centroid_x) ** 2.0) + ((row[0] - centroid_y) ** 2.0))
 
             # r, theta = self.cart2polar(col[0], row[0])
-            r, theta = self.cart_to_pol(col[0], row[0], x_c=centroid_x, y_c=centroid_y)
+            r, ang = self._cartesian_to_polar(col[0], row[0], x_c=centroid_x, y_c=centroid_y)
 
             # raios.append(round((r * 5) / 2))
             raios.append(round(radius))
@@ -175,27 +288,22 @@ class MeasurementLens:
             # Step #6e
             cv2.line(out, (centroid_x, centroid_y), (col[0], row[0]), (0, 255, 0), 1)
 
-        cmY = round(((x1 + w1) * 5) / 34.50)
-        cmX = round(((y1 + h1) * 5) / 34.50)
-
-        variavel_texto = ""
-        for a in [raios[i:i + 10] for (i) in range(0, len(raios), 10)]:
-            for lkk in a:
-                variavel_texto = variavel_texto + f"{lkk};"
-            variavel_texto = variavel_texto + "\n"
-
         values = dict(
-            horizontal=int((w1 / (proporcao + 10)) * 10),
-            vertical=int((h1 / (proporcao + 10)) * 10),
-            # horizontal=cmX,
-            # veritical=cmY,
-            diagonal=int((diagonal / (proporcao + 10)) * 10),
-            oma=variavel_texto
+            horizontal=round(largura_lente_pixel * scale),
+            vertical=round(altura_lente_pixel * scale),
+            diagonal=round(diagonal * scale),
+            oma=raios
         )
 
         return out, values
 
     def run(self, image: np.ndarray):
+
+        h, w = image.shape[:2]
+
+        if h > 1920 and w > 1080:
+            image = self._resize_image(image, (1920, 1080))
+
         img_bw = image.copy()
         _canny = self._image_processing(image=img_bw)
         contours = self.find_contours(_canny)
@@ -209,11 +317,11 @@ class MeasurementLens:
 
 if __name__ == '__main__':
     # file = r'C:\Users\Sandro Bispo\Desktop\photo_2023-03-22_08-56-00.jpg'
-    file = '/home/andre/Desktop/T3Labs/inpecao_lentes/photo_2023-03-10_18-04-04.jpg'
-    image = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
+    file = '/home/andre/Desktop/T3Labs/inpecao_lentes/photo_2023-03-31_11-56-54.jpg'
+    image = cv2.imread(file)
 
     measurement = MeasurementLens()
 
-    values = measurement.run(image=image)
+    _, values = measurement.run(image=image)
 
     print(values)
