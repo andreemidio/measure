@@ -3,7 +3,9 @@ import urllib.request
 
 import cv2
 import numpy as np
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse
 
 from apps.medicao_lente.measure_lens import MeasurementLens
 from apps.medicao_lente.models import DadosMedicao
@@ -61,7 +63,8 @@ def salvar_registro(request):
         _medicao.oma = lens["oma"]
         _medicao.save()
 
-        return render(request, 'app/obras.html')
+        # return render(request, 'app/obras.html')
+        return HttpResponseRedirect(reverse('obras'))
 
     if request.method == "GET":
         medicao = DadosMedicao.objects.values()
