@@ -14,20 +14,27 @@
                     {% if forloop.last %}
                         <div class="input" type="text">
                             <div>
+                                <h5 placeholder="OS" style="color: black;" id="first_name4" type="text"
+                                    class="validate" name="horizontal">OS: {{ medicao.OS }}</h5>
+                            </div>
+                        </div>
+                        <div class="input" type="text">
+                            <div>
                                 <h5 placeholder="HORIZONTAL" style="color: black;" id="first_name4" type="text"
-                                    class="validate" name="horizontal">Horizontal {{ medicao.horizontal }}</h5>
+                                    class="validate" name="horizontal">Horizontal: {{ medicao.horizontal }} mm</h5>
                             </div>
                         </div>
                         <div class="input" type="text">
                             <div>
                                 <h5 placeholder="HORIZONTAL" style="color: black;" id="first_name6" type="text"
-                                    class="validate" name="horizontal">Vertical {{ medicao.vertical }}</h5>
+                                    class="validate" name="horizontal">Vertical: {{ medicao.vertical }} mm</h5>
                             </div>
                         </div>
                         <div class="input" type="text">
                             <div>
                                 <h5 placeholder="HORIZONTAL" style="color: black;" id="first_name7" type="text"
-                                    class="validate" name="horizontal">Diagonal Maior {{ medicao.diagonalMaior }}</h5>
+                                    class="validate" name="horizontal">Diagonal Maior: {{ medicao.diagonalMaior }}
+                                    mm</h5>
                             </div>
                         </div>
                     {% endif %}
