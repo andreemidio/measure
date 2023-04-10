@@ -31,7 +31,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
 
-    path('', auth_views.LoginView.as_view(), name='login'),
+    path('', views.login_view, name='login'),
     path('obras/', salvar_registro, name='obras'),
     path('documentacao/1/', views.documentacao_1, name='documentacao-1'),
     path('documentacao/2/', views.documentacao_2, name='documentacao-2'),
