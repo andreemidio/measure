@@ -1,5 +1,4 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import authentication
 from rest_framework import parsers
 from rest_framework import permissions, viewsets, status
 from rest_framework import renderers
@@ -20,12 +19,11 @@ class DadosMedicaoViewSet(viewsets.ModelViewSet):
     # permission_classes = (permissions.IsAuthenticated,)
     permission_classes = (permissions.AllowAny,)
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['OS', 'cnpjOtica', 'cnpjLaboratorio']
-    search_fields = ['OS', 'cnpjOtica', 'cnpjLaboratorio']
+    filterset_fields = ['OS', 'cnpj_otica', 'cnpj_laboratorio']
+    search_fields = ['OS', 'cnpj_otica', 'cnpj_laboratorio']
     parser_classes = [parsers.MultiPartParser]
     renderer_classes = [renderers.StaticHTMLRenderer, renderers.TemplateHTMLRenderer,
                         renderers.HTMLFormRenderer, renderers.JSONRenderer, ]
-
 
 
 class CnpjList(viewsets.ModelViewSet):

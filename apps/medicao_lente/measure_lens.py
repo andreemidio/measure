@@ -313,7 +313,12 @@ class MeasurementLens:
 
         me, values = self.measurement_lens(image=out, img_bw=img_bw, contours=contours)
 
-        return me, values
+        data = dict(
+            me=me,
+            values=values
+        )
+
+        return data
 
 
 if __name__ == '__main__':

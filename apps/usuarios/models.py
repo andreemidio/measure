@@ -33,14 +33,14 @@ class EmailUserManager(BaseUserManager):
 
 class Usuarios(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    fullName = models.CharField(max_length=255, blank=True, null=True)
-    cellPhone = models.CharField(max_length=30, blank=True, null=True)
+    fullname = models.CharField(max_length=255, blank=True, null=True)
+    cellphone = models.CharField(max_length=30, blank=True, null=True)
     email = models.EmailField(unique=True, max_length=255)
-    resetPassword = models.BooleanField(default=False)
+    reset_password = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False, blank=True, null=True)
     is_staff = models.BooleanField(default=False, blank=True, null=True)
     is_active = models.BooleanField(default=True)
-    dataCriacao = models.DateTimeField(auto_now_add=True)
+    data_criacao = models.DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD = 'email'
     objects = EmailUserManager()
@@ -59,4 +59,4 @@ class Usuarios(AbstractBaseUser, PermissionsMixin):
         db_table = 'usuarios'
         verbose_name = 'Usuario'
         verbose_name_plural = 'Usuarios'
-        ordering = ['-dataCriacao']
+        ordering = ['-data_criacao']
