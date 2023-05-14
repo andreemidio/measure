@@ -1,6 +1,6 @@
 amqp==5.1.1
 asgiref==3.6.0
-billiard==4.1.0
+billiard==3.6.4.0
 Brotli==1.0.9
 cached-property==1.5.2
 celery==5.2.7
