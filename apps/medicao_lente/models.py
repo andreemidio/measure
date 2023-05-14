@@ -48,6 +48,7 @@ class DadosMedicao(models.Model):
     ponte = models.IntegerField(null=True, blank=True)
     altura = models.IntegerField(null=True, blank=True)
 
+    processado = models.BooleanField(default=False)
     data_criacao = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     cnpj_otica = CNPJField(masked=True, blank=True, null=True)
     cnpj_laboratorio = CNPJField(masked=True, blank=True, null=True)

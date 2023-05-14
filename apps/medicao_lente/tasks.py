@@ -46,6 +46,7 @@ def measure_lens(id: str) -> None:
         horizontal_olho_esquerdo=_mlens_esquerdo['values']['horizontal'],
         vertical_olho_esquerdo=_mlens_esquerdo['values']['vertical'],
         diagonal_maior_olho_esquerdo=_mlens_esquerdo['values']['diagonal'],
+        processado=True,
         # oma_olho_esquerdo=_mlens_esquerdo['values']['oma'],
     )
 
