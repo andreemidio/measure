@@ -48,7 +48,7 @@ npm==0.1.1
 numpy==1.24.3
 opencv-contrib-python-headless==4.7.0.72
 opencv-python-headless==4.7.0.72
-optional-django==0.3.0
+optional-django==0.1.0
 packaging==23.1
 Pillow==9.5.0
 prettyconf==2.2.1
