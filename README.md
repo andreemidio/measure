@@ -1,1 +1,0 @@
-[![Measure Lens Backend Production CI](https://github.com/andreemidio/measure/actions/workflows/production.yml/badge.svg?branch=main)](https://github.com/andreemidio/measure/actions/workflows/production.yml)
