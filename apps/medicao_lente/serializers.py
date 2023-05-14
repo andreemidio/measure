@@ -1,11 +1,8 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 
-from apps.medicao_lente.measure_lens import MeasurementLens
 from apps.medicao_lente.models import DadosMedicao
 from apps.medicao_lente.tasks import measure_lens
-
-
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):

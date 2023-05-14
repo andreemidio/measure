@@ -1,17 +1,16 @@
+import json
 import urllib
 import urllib.request
 
 import cv2
 import numpy as np
 import requests
-import json
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from .form import LoginForm
-from .decorators import autenticacao_necessaria
 
 from apps.medicao_lente.measure_lens import MeasurementLens
 from apps.medicao_lente.models import DadosMedicao
+from .decorators import autenticacao_necessaria
+from .form import LoginForm
 
 mlens = MeasurementLens()
 
@@ -109,7 +108,6 @@ def documentacao_categorias(request):
 @autenticacao_necessaria
 def upload(request):
     return render(request, 'app/upload.html')
-
 
 
 def autenticar(username, password):
