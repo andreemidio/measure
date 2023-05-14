@@ -15,6 +15,7 @@ from pathlib import Path
 
 from dj_database_url import parse as dburl
 from prettyconf import Configuration
+from sentry_sdk.integrations.celery import CeleryIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -222,6 +223,7 @@ sentry_sdk.init(
             middleware_spans=True,
             signals_spans=False,
         ),
+        CeleryIntegration(),
     ],
 )
 
