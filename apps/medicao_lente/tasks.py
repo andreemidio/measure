@@ -51,5 +51,3 @@ def measure_lens(id: str) -> None:
     )
 
     update_measure_lens_task.delay(id=id['id'], **data)
-
-    # return True
