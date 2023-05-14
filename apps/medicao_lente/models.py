@@ -21,7 +21,7 @@ def generate_uuid4_filename(instance, filename):
     """
     discard, ext = os.path.splitext(filename)
     basename = uuid.uuid4()
-    resultado = f'{basename.__str__()}{ext}'
+    resultado = f'images-lens/{basename.__str__()}{ext}'
 
     return resultado
 
