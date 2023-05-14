@@ -1,0 +1,102 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+    <form action="{% url 'obras' %}" method="POST" enctype="multipart/form-data">{% csrf_token %}
+        <div class="container">
+            <div>
+                <div>
+                    <label for="fileupload" class="custom-file-upload"><i class="fal fa-file"></i> Arquivo da
+                        Imagem</label>
+                    <input type="file" id="fileupload" placeholder="Select file" name="image">
+                </div>
+
+                {% for  medicao in medicoes %}
+                    {% if forloop.last %}
+                        <div class="input" type="text">
+                            <div>
+                                <h5 placeholder="OS" style="color: black;" id="first_name4" type="text"
+                                    class="validate" name="horizontal">OS: {{ medicao.OS }}</h5>
+                            </div>
+                        </div>
+                        <div class="input" type="text">
+                            <div>
+                                <h5 placeholder="HORIZONTAL" style="color: black;" id="first_name4" type="text"
+                                    class="validate" name="horizontal">Horizontal: {{ medicao.horizontal }} mm</h5>
+                            </div>
+                        </div>
+                        <div class="input" type="text">
+                            <div>
+                                <h5 placeholder="HORIZONTAL" style="color: black;" id="first_name6" type="text"
+                                    class="validate" name="horizontal">Vertical: {{ medicao.vertical }} mm</h5>
+                            </div>
+                        </div>
+                        <div class="input" type="text">
+                            <div>
+                                <h5 placeholder="HORIZONTAL" style="color: black;" id="first_name7" type="text"
+                                    class="validate" name="horizontal">Diagonal Maior: {{ medicao.diagonalMaior }}
+                                    mm</h5>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                <div>
+                    <div class="input" type="text">
+                        <div>
+                            <input placeholder="DNP" id="first_name" type="text" class="validate" name="DNP">
+                        </div>
+                    </div>
+                    <div class="input" type="text">
+                        <div>
+                            <input placeholder="ALTURA" id="first_name1" type="text" class="validate" name="altura">
+                        </div>
+                    </div>
+                    <div class="input" type="text">
+                        <div>
+                            <input placeholder="PONTE" id="first_name2" type="text" class="validate" name="ponte">
+                        </div>
+                    </div>
+                    <br>
+                    <div>
+                        <div>
+                            <p>
+                                <label>
+                                    <input type="checkbox" name="olho_direito"/>
+                                    <span style="color: black;">Olho direito</span>
+                                </label>
+                            </p>
+                        </div>
+                    </div>
+                    <div>
+                        <p>
+                            <label>
+                                <input type="checkbox" name="olho_esquerdo"/>
+                                <span style="color: black;">Olho esquerdo</span>
+                            </label>
+                        </p>
+                    </div>
+                </div>
+                <div class="input" type="text">
+                    <div>
+                        <input placeholder="OS" id="first_name3" type="text" class="validate" name="OS">
+                    </div>
+                </div>
+
+
+                <br>
+                <button class="btn waves-effect waves-light" type="submit" name="action">Enviar
+                </button>
+                <br>
+            </div>
+    </form>
+
+
+
+
+    <div class="btn-float">
+        <a href="https://instagram.com/" target="_blank" class="btn-float"><i class="fab fa-whatsapp"></i></a>
+    </div>
+    {% include 'app/TheNavigationBar.html' %}
+    </div>
+
+
+{% endblock %}

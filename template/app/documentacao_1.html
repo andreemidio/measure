@@ -1,0 +1,34 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+    <div class="container">
+        <div>
+            <div class="logo"></div>
+            <br>
+            <div class="box_container">
+                {% for  medicao in medicoes %}
+                    <div class="box">
+                        <div>
+
+                            <div class="box-title">OS {{ medicao.OS }}</div>
+                            <div class="box-title">Horizontal {{ medicao.horizontal }}</div>
+                            <div class="box-title">Verical {{ medicao.vertical }}</div>
+                            <div class="box-title">Diagonal Maior {{ medicao.diagonalMaior }}</div>
+                            <div class="box-title">DNP {{ medicao.DNP }}</div>
+                            <div class="box-title">PONTE {{ medicao.ponte }}</div>
+                            <div class="box-title">Altura {{ medicao.altura }}</div>
+                            <div class="box-title">CNPJ Otica {{ medicao.cnpjOtica }}</div>
+                            <div class="box-title">CNPJ Lab {{ medicao.cnpjLaboratorio }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+        <div class="btn-float">
+            <a href="https://instagram.com/" target="_blank" class="btn-float"><i class="fab fa-whatsapp"></i></a>
+        </div>
+        {% include 'app/TheNavigationBar.html' %}
+    </div>
+{% endblock %}

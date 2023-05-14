@@ -1,0 +1,27 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+<div class="container">
+  <div>
+    <div class="logo"></div>
+    <div class="drop-box-container">
+      <div class="drop-box" id="dropBox">
+          <p><i class="fad fa-cloud-upload"></i></p>
+          <p>Arraste e Solte para subir</p>
+          <form enctype="multipart/form-data" method="POST" action="">
+              <p>ou</p>
+              {% csrf_token %}
+              <div>
+                  <label for="fileupload" class="custom-file-upload"><i class="fal fa-file"></i> Arquivo da Imagem</label>
+                  <input type="file" id="fileupload" placeholder="Select file">
+              </div>    
+          </form>
+      </div>
+    </div>
+    <div class="btn-float">
+      <a href="https://instagram.com/" target="_blank" class="btn-float"><i class="fab fa-whatsapp"></i></a>
+    </div>
+    {% include 'app/TheNavigationBar.html' %}
+  </div>
+</div>
+{% endblock %}
