@@ -14,9 +14,7 @@ def get_image_by_id(id: str) -> str:
 
 
 def update_measure_lens(id: str, **kwargs) -> None:
-    dd = DadosMedicao.objects.filter(id=id)
-
-    dd.update(**kwargs)
+    dd = DadosMedicao.objects.filter(id=id).update(**kwargs)
 
 
 if __name__ == '__main__':
