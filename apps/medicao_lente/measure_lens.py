@@ -3,7 +3,7 @@ from typing import Tuple
 
 import cv2
 import numpy as np
-from shapely import LineString, Point
+from shapely import LineString
 from shapely.geometry import Polygon
 
 
@@ -65,76 +65,6 @@ class MeasurementLens:
 
         return max_x1, max_x2
 
-    def _rotate_image(self, image: np.ndarray, points) -> np.ndarray:
-        resultado_image = image.copy()
-        height, width, channels = image.shape
-
-        if height > width:
-            part_width = height // 3
-
-            print(points)
-
-            print("Height Ganhou")
-
-            # Slice the image into three parts
-            part1 = img[:part_width, :]
-            part2 = img[part_width:part_width * 2, :]
-            part3 = img[part_width * 2:, :]
-
-            max_value_in_y_axis = np.max(points)
-
-            p = np.vstack([contour.reshape(-1, 2) for contour in points])
-
-            max_x, max_y = np.max(p, axis=0)
-
-            cv2.namedWindow('ksks', cv2.WINDOW_KEEPRATIO)
-            cv2.imshow("part1", part1)
-            cv2.imshow("part2", part2)
-            cv2.imshow("part3", part3)
-            cv2.waitKey(0)
-
-        if width > height:
-            part_width = width // 3
-            print(points)
-            print("Width Ganhou")
-
-            # Find the two highest X values
-
-            p = np.vstack([contour.reshape(-1, 2) for contour in points])
-
-            max_x, max_y = np.max(p, axis=0)
-
-            # max_vales = np.ndarray([int(max_x), int(max_y)])
-            #
-            # max_vales.reshape(-1, 2)
-
-            p1 = Point(max_x, max_y)
-
-            # Slice the image into three parts
-            # part1 = img[:, :part_width]
-            part1 = int(width / 3)
-            part2 = img[:, part_width:part_width * 2]
-            part3 = img[:, part_width * 2:]
-
-            # pts_image_1 = part1.reshape(-1, 2)
-            # polygon_image_1 = Polygon(pts_image_1)
-            pts_image_2 = part1.reshape(-1, 2)
-            polygon_image_2 = Polygon(pts_image_2)
-            pts_image_3 = part1.reshape(-1, 2)
-            polygon_image_3 = Polygon(pts_image_3)
-
-            # resultado_image1 = polygon_image_1.contains(p1)
-            resultado_image2 = polygon_image_2.contains(p1)
-            resultado_image3 = polygon_image_3.contains(p1)
-
-            cv2.namedWindow('ksks', cv2.WINDOW_KEEPRATIO)
-            cv2.imshow("part1", part1)
-            cv2.imshow("part2", part2)
-            cv2.imshow("part3", part3)
-            cv2.waitKey(0)
-
-        return image
-
     def get_aruco(self, image: np.ndarray) -> Tuple[float, int, int]:
 
         dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50)
@@ -143,13 +73,15 @@ class MeasurementLens:
 
         markerCorners, markerIds, rejectedCandidates = detector.detectMarkers(image)
 
+        if markerIds is None:
+            return {"erro": "Aruco not found"}
+
         perimeter_aruco = cv2.arcLength(markerCorners[0], True)
 
         minRect = cv2.minAreaRect(markerCorners[0][0])
         scale = 32 / (float(float(minRect[1][0]) + float(minRect[1][1])) / 2)
 
         # image_result = self._rotate_image(image, markerCorners)
-
         return scale
 
     def _cartesian_to_polar(self, x, y, x_c=0, y_c=0, deg=True):
@@ -170,6 +102,13 @@ class MeasurementLens:
 
         return contours
 
+    def find_max_values(self, list_values):
+        first_max = max(list_values)
+        list_values.remove(first_max)  # Remove the first maximum value from the list
+        second_max = max(list_values)  # The new maximum value is the second maximum in the original list
+
+        return first_max, second_max
+
     def read_image(self, filename: str) -> np.ndarray:
         return cv2.imread(filename, 0)
 
@@ -178,9 +117,13 @@ class MeasurementLens:
         # proporcao, altura_aruco_pixel, largura_aruco_pixel, fator = self.get_aruco(image)
         scale = self.get_aruco(image)
 
+        if isinstance(scale, dict):
+            if scale["erro"]:
+                data = 1
+
+                return data, scale
+
         out = image.copy()
-        # out = cv2.cvtColor(out, cv2.COLOR_BGR2GRAY)
-        # img_bw = cv2.cvtColor(img_bw, cv2.COLOR_BGR2GRAY)
 
         # Step #4
 
@@ -275,7 +218,6 @@ class MeasurementLens:
             cv2.line(tmp, (centroid_x, centroid_y), (largura, altura), 255, 5)
 
             # Step #6d
-
             (row, col) = np.nonzero(np.logical_and(tmp, ref))
 
             radius = np.sqrt(((col[0] - centroid_x) ** 2.0) + ((row[0] - centroid_y) ** 2.0))
@@ -289,10 +231,14 @@ class MeasurementLens:
             # Step #6e
             cv2.line(out, (centroid_x, centroid_y), (col[0], row[0]), (0, 255, 0), 1)
 
+        cv2.imwrite("teste_out.jpg", out)
+
+        first, second = self.find_max_values(raios)
+
         values = dict(
             horizontal=floor(largura_lente_pixel * scale),
             vertical=floor(altura_lente_pixel * scale),
-            diagonal=floor(diagonal * scale),
+            diagonal=floor((first + second) * scale),
             oma=raios
         )
 
@@ -313,18 +259,47 @@ class MeasurementLens:
 
         me, values = self.measurement_lens(image=out, img_bw=img_bw, contours=contours)
 
+        if isinstance(values, dict):
+            if values.get("erro") == 'Aruco not found':
+                data = 1
+
+                return values
+
+        # values["oma"]
+
+        values_per_line = 10
+        total_values = 360
+
+        # Generate the values using the given format
+        oma_values = [f"R={';'.join(str(v) for i, v in enumerate(values['oma']))}\n" for _ in
+                      range(len(values['oma']) // values_per_line)]
+
+        # Open the file for writing
+        with open('output.txt', 'w') as file:
+            # Write the values to the file
+            for i, v in enumerate(oma_values):
+                # Write the value to the file
+                file.write(v)
+
+                # Check if it's the last value in the line
+                if (i + 1) % values_per_line == 0:
+                    file.write('\n')  # Add a new line
+                else:
+                    file.write(' ')  # Add a space between values
+
         data = dict(
             me=me,
-            values=values
+            values=values,
+            oma=oma_values
         )
 
         return data
 
 
 if __name__ == '__main__':
-    # file = r'C:\Users\Sandro Bispo\Desktop\photo_2023-03-22_08-56-00.jpg'
-    file = '/home/andre/Desktop/T3Labs/inpecao_lentes/photo_2023-03-31_11-56-54.jpg'
-    image = cv2.imread(file)
+    # file = '/home/andre/Desktop/accert/imagens/4a6f187a-da05-4e89-81a0-d15989242db2_mg4n6r.jpg'
+    file = '/home/andre/Desktop/accert/imagens/photo_2023-03-29_14-01-43.jpg'
+    image = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
 
     measurement = MeasurementLens()
 

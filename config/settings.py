@@ -175,47 +175,48 @@ USE_TZ = True
 
 APPEND_SLASH = True
 
-if not DEBUG:
-    STORAGES = {
-        "default": {
-            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage"
-        },
-        "staticfiles": {
-            "BACKEND": "storages.backends.s3boto3.S3StaticStorage"
-        }
+# LOGIN_URL = 'login'
+
+# if not DEBUG:
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage"
+    },
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3boto3.S3StaticStorage"
     }
-    STATIC_URL = 'static/'
-    STATIC_ROOT = BASE_DIR / "staticfiles"
+}
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
-    STATIC_URL = '/static/'
+STATIC_URL = '/static/'
 
-    STATICFILES_DIRS = [
-        os.path.join(BASE_DIR, 'static'),
-    ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-    AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
-    AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-    MEDIA_URL = '/media/'
-else:
-
-    STATIC_URL = 'static/'
-    STATIC_ROOT = BASE_DIR / "staticfiles"
-
-    STATIC_URL = '/static/'
-
-    STATICFILES_DIRS = [
-        os.path.join(BASE_DIR, 'static'),
-    ]
-
-    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-    MEDIA_URL = '/media/'
-
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME')
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+# else:
+#
+#     STATIC_URL = 'static/'
+#     STATIC_ROOT = BASE_DIR / "staticfiles"
+#
+#     STATIC_URL = '/static/'
+#
+#     STATICFILES_DIRS = [
+#         os.path.join(BASE_DIR, 'static'),
+#     ]
+#
+#     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+#
+#     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+#     MEDIA_URL = '/media/'
 
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
