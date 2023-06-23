@@ -112,20 +112,14 @@ class MeasurementLens:
     def read_image(self, filename: str) -> np.ndarray:
         return cv2.imread(filename, 0)
 
-    def measurement_lens(self, image: np.ndarray, img_bw: np.ndarray, contours):
-
-        # proporcao, altura_aruco_pixel, largura_aruco_pixel, fator = self.get_aruco(image)
+    def measurement_lens(self, image: np.ndarray, img_bw: np.ndarray, contours, side: str):
         scale = self.get_aruco(image)
-
         if isinstance(scale, dict):
             if scale["erro"]:
                 data = 1
-
                 return data, scale
 
         out = image.copy()
-
-        # Step #4
 
         conto = max(contours, key=cv2.contourArea)
 
@@ -156,14 +150,10 @@ class MeasurementLens:
 
         vvv = box[3][0] - box[0][0]
 
-        # cv2.rectangle(out, (x1, y1), (x1 + largura_lente_pixel, y1 + altura_lente_pixel), (0, 255, 0), 2)
-
         for i in box:
             cv2.circle(out, (i[0], i[1]), 3, (0, 255, 0), -1)
 
         list_values_line = list()
-
-        # cv2.line(out, (x1, y1), (sss, hhh), (255, 255, 255), 2)
 
         imagem_nova = np.zeros(out.shape, dtype=np.uint8)
 
@@ -201,6 +191,22 @@ class MeasurementLens:
         raios: list = list()
         # Step #6
 
+        image_copy = image.copy()
+        cv2.drawContours(image=out, contours=contour, contourIdx=1, color=(0, 255, 0), thickness=2,
+                         lineType=cv2.LINE_AA)
+        cv2.drawContours(out, contour, 1, (255, 255, 255, 255), 4)
+        cv2.imwrite("contour.png", out)
+
+        cv2.imwrite("image_te.jpeg", image_copy)
+
+        mask = np.zeros_like(out)
+        cv2.drawContours(mask, contours, 1, (255, 255, 255), cv2.FILLED)
+        cv2.imwrite('mask.png', mask)
+
+        # image_2 = cv2.flip(image_2, 1)
+        #
+        # cv2.imwrite("image2_te.jpeg", image_2)
+
         for i in range(N):
             # Step #6a
             tmp = np.zeros_like(img_bw)
@@ -231,9 +237,14 @@ class MeasurementLens:
             # Step #6e
             cv2.line(out, (centroid_x, centroid_y), (col[0], row[0]), (0, 255, 0), 1)
 
-        cv2.imwrite("teste_out.jpg", out)
+            cv2.imwrite("image_tmp_te.jpeg", out)
 
         first, second = self.find_max_values(raios)
+
+        rai_2 = np.array(raios)
+        raios_2 = cv2.flip(rai_2, 1)
+
+        flipped_list = raios_2.tolist()
 
         values = dict(
             horizontal=floor(largura_lente_pixel * scale),
@@ -244,7 +255,7 @@ class MeasurementLens:
 
         return out, values
 
-    def run(self, image: np.ndarray):
+    def run(self, image: np.ndarray, side: str):
 
         h, w = image.shape[:2]
 
@@ -257,7 +268,7 @@ class MeasurementLens:
 
         out = image.copy()
 
-        me, values = self.measurement_lens(image=out, img_bw=img_bw, contours=contours)
+        me, values = self.measurement_lens(image=out, img_bw=img_bw, contours=contours, side=side)
 
         if isinstance(values, dict):
             if values.get("erro") == 'Aruco not found':
@@ -298,11 +309,14 @@ class MeasurementLens:
 
 if __name__ == '__main__':
     # file = '/home/andre/Desktop/accert/imagens/4a6f187a-da05-4e89-81a0-d15989242db2_mg4n6r.jpg'
-    file = '/home/andre/Desktop/accert/imagens/photo_2023-03-29_14-01-43.jpg'
+    # file = '/home/andre/Desktop/accert/imagens/photo_2023-03-29_14-01-43.jpg'
+    file = '/home/andre/Desktop/accert/measure/data/2dcc95dc-8707-48f5-a86e-d4c5bac57794_fymtfv.jpg'
     image = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
-
+    # cv2.namedWindow("tet", cv2.WINDOW_KEEPRATIO)
+    # cv2.imshow("tet", image)
+    cv2.waitKey(0)
     measurement = MeasurementLens()
 
-    _, values = measurement.run(image=image)
+    _, values = measurement.run(image=image, side="direito")
 
     print(values)

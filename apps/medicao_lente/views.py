@@ -24,6 +24,10 @@ def salvar_registro(request):
     if request.method == "POST":
         image = request.FILES.get('image')
 
+        side = None
+        if request.POST.get('side'):
+            side = request.POST.get('side')
+
         dnp = 0
         if request.POST.get('DNP'):
             dnp = request.POST.get('DNP')
@@ -52,7 +56,7 @@ def salvar_registro(request):
         id_file_cloudnary = np.asarray(bytearray(id_file_url.read()), dtype=np.uint8)
         _image = cv2.imdecode(id_file_cloudnary, cv2.IMREAD_GRAYSCALE)
 
-        lens = mlens.run(image=_image)
+        lens = mlens.run(image=_image, side=side)
 
         cv2.imwrite("_image.jpg", _image)
 
@@ -60,10 +64,10 @@ def salvar_registro(request):
 
         cv2.imwrite("_image_two.jpg", _image_two)
 
-        lens_two = mlens.run(image=_image_two)
+        lens_two = mlens.run(image=_image_two, side=side)
 
-        if lens_two.get("erro") == 'Aruco not found':
-            return HttpResponse(lens["erro"])
+        # if lens_two.get("erro") == 'Aruco not found':
+        #     return HttpResponse(lens["erro"])
 
         if lens.get("erro") == 'Aruco not found':
             return HttpResponse(lens["erro"])
