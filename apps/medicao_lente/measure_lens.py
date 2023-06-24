@@ -141,14 +141,25 @@ class MeasurementLens:
         x1, y1, largura_lente_pixel, altura_lente_pixel = cv2.boundingRect(c)
 
         largura = x + w
-        altura = y + altura_lente_pixel
+        altura = y + h
 
         rect = cv2.minAreaRect(contours[0])
         box = cv2.boxPoints(rect)
 
         box = np.intp(box)
 
-        vvv = box[3][0] - box[0][0]
+        distance = cv2.norm(box[0], box[1], cv2.NORM_L2)
+
+        print("Distance:", distance)
+
+        x1 = box[1, 0]
+        y1 = box[1, 1]
+        x2 = box[0, 0]
+        y2 = box[0, 1]
+        distance = np.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2) / scale
+
+        vvv = box[3][0] - box[1][0]
+        zzz = box[2][0] - box[0][0]
 
         for i in box:
             cv2.circle(out, (i[0], i[1]), 3, (0, 255, 0), -1)
@@ -201,11 +212,21 @@ class MeasurementLens:
 
         mask = np.zeros_like(out)
         cv2.drawContours(mask, contours, 1, (255, 255, 255), cv2.FILLED)
+        mask2 = cv2.flip(mask, 1)
         cv2.imwrite('mask.png', mask)
+        cv2.imwrite('mask2.png', mask2)
 
-        # image_2 = cv2.flip(image_2, 1)
-        #
-        # cv2.imwrite("image2_te.jpeg", image_2)
+        fff = self.find_contours(mask)
+        hhh = self.find_contours(mask2)
+
+        m1 = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
+        m2 = cv2.cvtColor(mask2, cv2.COLOR_GRAY2BGR)
+
+        cv2.drawContours(m1, fff, -1, (0, 255, 0), 2, cv2.LINE_AA)
+        cv2.drawContours(m2, hhh, -1, (0, 255, 0), 2, cv2.LINE_AA)
+
+        cv2.imwrite('mask_contours.png', m1)
+        cv2.imwrite('mask2_contours.png', m2)
 
         for i in range(N):
             # Step #6a
@@ -240,7 +261,7 @@ class MeasurementLens:
             cv2.imwrite("image_tmp_te.jpeg", out)
 
         first, second = self.find_max_values(raios)
-
+        
         rai_2 = np.array(raios)
         raios_2 = cv2.flip(rai_2, 1)
 
