@@ -94,10 +94,11 @@ def salvar_registro(request):
 # @login_required
 # @autenticacao_necessaria
 def documentacao_1(request):
-    medicao = DadosMedicao.objects.all().values()
+    medicao = DadosMedicao.objects.all()
 
     contexto = {
-        "medicoes": medicao
+        "medicoes": medicao,
+
     }
     return render(request, 'app/documentacao_1.html', contexto)
 
