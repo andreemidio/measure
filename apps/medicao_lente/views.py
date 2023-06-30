@@ -68,7 +68,7 @@ def salvar_registro(request):
         _medicao.oma = lens["oma"]
         _medicao.processado = True
 
-        name = f"{str(_medicao.OS)}_{str(_medicao.id)}.txt"
+        name = f"{str(_medicao.OS)}_{str(_medicao.id)}.vca"
 
         with open(name, 'w', encoding='utf-8') as file:
             file.write(lens["oma"])
