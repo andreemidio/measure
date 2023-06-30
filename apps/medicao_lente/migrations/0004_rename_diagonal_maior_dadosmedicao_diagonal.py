@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('medicao_lente', '0003_dadosmedicao_oma_file'),
     ]
