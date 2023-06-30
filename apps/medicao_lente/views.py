@@ -1,9 +1,11 @@
 import urllib
 import urllib.request
+from pathlib import Path
 
 import cv2
 import numpy as np
 from django.contrib.auth import authenticate
+from django.core.files import File
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
@@ -58,17 +60,6 @@ def salvar_registro(request):
 
         lens = mlens.run(image=_image, side=side)
 
-        cv2.imwrite("_image.jpg", _image)
-
-        _image_two = cv2.flip(_image, 1)
-
-        cv2.imwrite("_image_two.jpg", _image_two)
-
-        lens_two = mlens.run(image=_image_two, side=side)
-
-        # if lens_two.get("erro") == 'Aruco not found':
-        #     return HttpResponse(lens["erro"])
-
         if lens.get("erro") == 'Aruco not found':
             return HttpResponse(lens["erro"])
 
@@ -76,10 +67,19 @@ def salvar_registro(request):
         _medicao.vertical = lens["values"]["vertical"]
         _medicao.diagonal = lens["values"]["diagonal"]
 
-        s = ''.join(str(x) for x in lens["oma"])
-        _medicao.oma = s
+        _medicao.oma = lens["oma"]
         _medicao.processado = True
-        _medicao.save()
+
+        name = f"{str(_medicao.OS)}_{str(_medicao.id)}.txt"
+
+        with open(name, 'w', encoding='utf-8') as file:
+            file.write(lens["oma"])
+
+        path = Path(name)
+
+        with path.open(mode="rb") as f:
+            _medicao.oma_file = File(f, name=path.name)
+            _medicao.save()
 
         return render(request, 'app/obras.html')
 

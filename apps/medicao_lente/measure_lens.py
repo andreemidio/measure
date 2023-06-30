@@ -244,7 +244,7 @@ class MeasurementLens:
             oma_invertido=raios[::-1]
         )
 
-        return out, values
+        return values
 
     def run(self, image: np.ndarray, side: str):
 
@@ -259,7 +259,7 @@ class MeasurementLens:
 
         out = image.copy()
 
-        me, values = self.measurement_lens(image=out, img_bw=img_bw, contours=contours, side=side)
+        values = self.measurement_lens(image=out, img_bw=img_bw, contours=contours, side=side)
 
         if isinstance(values, dict):
             if values.get("erro") == 'Aruco not found':
@@ -301,9 +301,6 @@ class MeasurementLens:
             valor_oma_invertido = var_invertido + oma_invertido[0]
 
             resultato_total = valor_oma_medido + valor_oma_invertido
-
-        values = [f"R={';'.join(str(i) for i in oma_invertido_values)}" for _ in
-                  range(total_values // 10)]
 
         data = dict(
 
