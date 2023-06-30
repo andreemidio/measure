@@ -57,7 +57,6 @@ def salvar_registro(request):
         id_file_url = urllib.request.urlopen(_medicao.imagem_lente.url)
         id_file_cloudnary = np.asarray(bytearray(id_file_url.read()), dtype=np.uint8)
         _image = cv2.imdecode(id_file_cloudnary, cv2.IMREAD_GRAYSCALE)
-
         lens = mlens.run(image=_image, side=side)
 
         if lens.get("erro") == 'Aruco not found':
@@ -66,7 +65,6 @@ def salvar_registro(request):
         _medicao.horizontal = lens["values"]["horizontal"]
         _medicao.vertical = lens["values"]["vertical"]
         _medicao.diagonal = lens["values"]["diagonal"]
-
         _medicao.oma = lens["oma"]
         _medicao.processado = True
 
@@ -76,7 +74,6 @@ def salvar_registro(request):
             file.write(lens["oma"])
 
         path = Path(name)
-
         with path.open(mode="rb") as f:
             _medicao.oma_file = File(f, name=path.name)
             _medicao.save()
