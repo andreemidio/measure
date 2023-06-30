@@ -38,7 +38,7 @@ def salvar_registro(request):
         if request.POST.get('ponte'):
             ponte = request.POST.get('ponte')
 
-        user = Usuarios.objects.get(id="23891265-80e6-44d8-88de-b3573bcf8bfc")
+        user = Usuarios.objects.get(email="andresjc2008@gmail.com")
 
         medicao = {
             'dnp': int(dnp),
