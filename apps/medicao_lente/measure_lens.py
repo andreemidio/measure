@@ -203,30 +203,6 @@ class MeasurementLens:
         # Step #6
 
         image_copy = image.copy()
-        cv2.drawContours(image=out, contours=contour, contourIdx=1, color=(0, 255, 0), thickness=2,
-                         lineType=cv2.LINE_AA)
-        cv2.drawContours(out, contour, 1, (255, 255, 255, 255), 4)
-        cv2.imwrite("contour.png", out)
-
-        cv2.imwrite("image_te.jpeg", image_copy)
-
-        mask = np.zeros_like(out)
-        cv2.drawContours(mask, contours, 1, (255, 255, 255), cv2.FILLED)
-        mask2 = cv2.flip(mask, 1)
-        cv2.imwrite('mask.png', mask)
-        cv2.imwrite('mask2.png', mask2)
-
-        fff = self.find_contours(mask)
-        hhh = self.find_contours(mask2)
-
-        m1 = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
-        m2 = cv2.cvtColor(mask2, cv2.COLOR_GRAY2BGR)
-
-        cv2.drawContours(m1, fff, -1, (0, 255, 0), 2, cv2.LINE_AA)
-        cv2.drawContours(m2, hhh, -1, (0, 255, 0), 2, cv2.LINE_AA)
-
-        cv2.imwrite('mask_contours.png', m1)
-        cv2.imwrite('mask2_contours.png', m2)
 
         for i in range(N):
             # Step #6a
@@ -258,21 +234,17 @@ class MeasurementLens:
             # Step #6e
             cv2.line(out, (centroid_x, centroid_y), (col[0], row[0]), (0, 255, 0), 1)
 
-            cv2.imwrite("image_tmp_te.jpeg", out)
-
         first, second = self.find_max_values(raios)
-        
-        rai_2 = np.array(raios)
-        raios_2 = cv2.flip(rai_2, 1)
-
-        flipped_list = raios_2.tolist()
 
         values = dict(
             horizontal=floor(largura_lente_pixel * scale),
             vertical=floor(altura_lente_pixel * scale),
             diagonal=floor((first + second) * scale),
-            oma=raios
+            oma=raios,
+            oma_lado_2=raios[::-1]
         )
+
+        print(values)
 
         return out, values
 
@@ -307,7 +279,7 @@ class MeasurementLens:
                       range(len(values['oma']) // values_per_line)]
 
         # Open the file for writing
-        with open('output.txt', 'w') as file:
+        with open('/home/andre/Desktop/accert/measure/data/images/output.txt', 'w') as file:
             # Write the values to the file
             for i, v in enumerate(oma_values):
                 # Write the value to the file
@@ -320,7 +292,7 @@ class MeasurementLens:
                     file.write(' ')  # Add a space between values
 
         data = dict(
-            me=me,
+
             values=values,
             oma=oma_values
         )
@@ -331,13 +303,16 @@ class MeasurementLens:
 if __name__ == '__main__':
     # file = '/home/andre/Desktop/accert/imagens/4a6f187a-da05-4e89-81a0-d15989242db2_mg4n6r.jpg'
     # file = '/home/andre/Desktop/accert/imagens/photo_2023-03-29_14-01-43.jpg'
-    file = '/home/andre/Desktop/accert/measure/data/2dcc95dc-8707-48f5-a86e-d4c5bac57794_fymtfv.jpg'
+    # file = '/home/andre/Desktop/accert/measure/data/images/2dcc95dc-8707-48f5-a86e-d4c5bac57794_fymtfv.jpg'
+    # file = '/home/andre/Desktop/accert/measure/data/884e7bdb-17d4-4fc0-b4f6-153f6bda5bf9_ngwoke.jpg'
+    # file = '/home/andre/Desktop/accert/measure/data/5fdd241f-c534-4ab0-b712-6a08e5d3f096_ugueuk.jpg'
+    file = '/home/andre/Desktop/accert/measure/data/images/5fdd241f-c534-4ab0-b712-6a08e5d3f096_ugueuk.jpg'
     image = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
     # cv2.namedWindow("tet", cv2.WINDOW_KEEPRATIO)
     # cv2.imshow("tet", image)
     cv2.waitKey(0)
     measurement = MeasurementLens()
 
-    _, values = measurement.run(image=image, side="direito")
+    values = measurement.run(image=image, side="direito")
 
     print(values)
