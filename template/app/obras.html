@@ -5,8 +5,7 @@
         <div class="container">
             <div>
                 <div>
-                    <label for="fileupload" class="custom-file-upload"><i class="fal fa-file"></i> Arquivo da
-                        Imagem</label>
+                    <label for="fileupload" class="custom-file-upload"><i class="fal fa-file"></i>Lente</label>
                     <input type="file" id="fileupload" placeholder="Select file" name="image">
                 </div>
 
@@ -37,9 +36,24 @@
                                     mm</h5>
                             </div>
                         </div>
+                        
                     {% endif %}
                 {% endfor %}
                 <div>
+
+                    <div>
+                        <div>
+                            <p>
+                                <label>
+                                    <input type="radio" name="side" value="direito"/>
+                                    <span style="color: black;">Olho direito</span>
+                                    <input type="radio" name="side" value="esquerdo"/>
+                                    <span style="color: black;">Olho esquerdo</span>
+                                </label>
+                            </p>
+                        </div>
+                    </div>
+
                     <div class="input" type="text">
                         <div>
                             <input placeholder="DNP" id="first_name" type="text" class="validate" name="DNP">
@@ -56,24 +70,7 @@
                         </div>
                     </div>
                     <br>
-                    <div>
-                        <div>
-                            <p>
-                                <label>
-                                    <input type="checkbox" name="olho_direito"/>
-                                    <span style="color: black;">Olho direito</span>
-                                </label>
-                            </p>
-                        </div>
-                    </div>
-                    <div>
-                        <p>
-                            <label>
-                                <input type="checkbox" name="olho_esquerdo"/>
-                                <span style="color: black;">Olho esquerdo</span>
-                            </label>
-                        </p>
-                    </div>
+
                 </div>
                 <div class="input" type="text">
                     <div>

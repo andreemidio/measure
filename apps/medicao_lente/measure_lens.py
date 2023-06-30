@@ -3,7 +3,7 @@ from typing import Tuple
 
 import cv2
 import numpy as np
-from shapely import LineString, Point
+from shapely import LineString
 from shapely.geometry import Polygon
 
 
@@ -65,76 +65,6 @@ class MeasurementLens:
 
         return max_x1, max_x2
 
-    def _rotate_image(self, image: np.ndarray, points) -> np.ndarray:
-        resultado_image = image.copy()
-        height, width, channels = image.shape
-
-        if height > width:
-            part_width = height // 3
-
-            print(points)
-
-            print("Height Ganhou")
-
-            # Slice the image into three parts
-            part1 = img[:part_width, :]
-            part2 = img[part_width:part_width * 2, :]
-            part3 = img[part_width * 2:, :]
-
-            max_value_in_y_axis = np.max(points)
-
-            p = np.vstack([contour.reshape(-1, 2) for contour in points])
-
-            max_x, max_y = np.max(p, axis=0)
-
-            cv2.namedWindow('ksks', cv2.WINDOW_KEEPRATIO)
-            cv2.imshow("part1", part1)
-            cv2.imshow("part2", part2)
-            cv2.imshow("part3", part3)
-            cv2.waitKey(0)
-
-        if width > height:
-            part_width = width // 3
-            print(points)
-            print("Width Ganhou")
-
-            # Find the two highest X values
-
-            p = np.vstack([contour.reshape(-1, 2) for contour in points])
-
-            max_x, max_y = np.max(p, axis=0)
-
-            # max_vales = np.ndarray([int(max_x), int(max_y)])
-            #
-            # max_vales.reshape(-1, 2)
-
-            p1 = Point(max_x, max_y)
-
-            # Slice the image into three parts
-            # part1 = img[:, :part_width]
-            part1 = int(width / 3)
-            part2 = img[:, part_width:part_width * 2]
-            part3 = img[:, part_width * 2:]
-
-            # pts_image_1 = part1.reshape(-1, 2)
-            # polygon_image_1 = Polygon(pts_image_1)
-            pts_image_2 = part1.reshape(-1, 2)
-            polygon_image_2 = Polygon(pts_image_2)
-            pts_image_3 = part1.reshape(-1, 2)
-            polygon_image_3 = Polygon(pts_image_3)
-
-            # resultado_image1 = polygon_image_1.contains(p1)
-            resultado_image2 = polygon_image_2.contains(p1)
-            resultado_image3 = polygon_image_3.contains(p1)
-
-            cv2.namedWindow('ksks', cv2.WINDOW_KEEPRATIO)
-            cv2.imshow("part1", part1)
-            cv2.imshow("part2", part2)
-            cv2.imshow("part3", part3)
-            cv2.waitKey(0)
-
-        return image
-
     def get_aruco(self, image: np.ndarray) -> Tuple[float, int, int]:
 
         dictionary = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_50)
@@ -143,13 +73,15 @@ class MeasurementLens:
 
         markerCorners, markerIds, rejectedCandidates = detector.detectMarkers(image)
 
+        if markerIds is None:
+            return {"erro": "Aruco not found"}
+
         perimeter_aruco = cv2.arcLength(markerCorners[0], True)
 
         minRect = cv2.minAreaRect(markerCorners[0][0])
         scale = 32 / (float(float(minRect[1][0]) + float(minRect[1][1])) / 2)
 
         # image_result = self._rotate_image(image, markerCorners)
-
         return scale
 
     def _cartesian_to_polar(self, x, y, x_c=0, y_c=0, deg=True):
@@ -170,19 +102,24 @@ class MeasurementLens:
 
         return contours
 
+    def find_max_values(self, list_values):
+        first_max = max(list_values)
+        list_values.remove(first_max)  # Remove the first maximum value from the list
+        second_max = max(list_values)  # The new maximum value is the second maximum in the original list
+
+        return first_max, second_max
+
     def read_image(self, filename: str) -> np.ndarray:
         return cv2.imread(filename, 0)
 
-    def measurement_lens(self, image: np.ndarray, img_bw: np.ndarray, contours):
-
-        # proporcao, altura_aruco_pixel, largura_aruco_pixel, fator = self.get_aruco(image)
+    def measurement_lens(self, image: np.ndarray, img_bw: np.ndarray, contours, side: str):
         scale = self.get_aruco(image)
+        if isinstance(scale, dict):
+            if scale["erro"]:
+                data = 1
+                return data, scale
 
         out = image.copy()
-        # out = cv2.cvtColor(out, cv2.COLOR_BGR2GRAY)
-        # img_bw = cv2.cvtColor(img_bw, cv2.COLOR_BGR2GRAY)
-
-        # Step #4
 
         conto = max(contours, key=cv2.contourArea)
 
@@ -204,23 +141,30 @@ class MeasurementLens:
         x1, y1, largura_lente_pixel, altura_lente_pixel = cv2.boundingRect(c)
 
         largura = x + w
-        altura = y + altura_lente_pixel
+        altura = y + h
 
         rect = cv2.minAreaRect(contours[0])
         box = cv2.boxPoints(rect)
 
         box = np.intp(box)
 
-        vvv = box[3][0] - box[0][0]
+        distance = cv2.norm(box[0], box[1], cv2.NORM_L2)
 
-        # cv2.rectangle(out, (x1, y1), (x1 + largura_lente_pixel, y1 + altura_lente_pixel), (0, 255, 0), 2)
+        print("Distance:", distance)
+
+        x1 = box[1, 0]
+        y1 = box[1, 1]
+        x2 = box[0, 0]
+        y2 = box[0, 1]
+        distance = np.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2) / scale
+
+        vvv = box[3][0] - box[1][0]
+        zzz = box[2][0] - box[0][0]
 
         for i in box:
             cv2.circle(out, (i[0], i[1]), 3, (0, 255, 0), -1)
 
         list_values_line = list()
-
-        # cv2.line(out, (x1, y1), (sss, hhh), (255, 255, 255), 2)
 
         imagem_nova = np.zeros(out.shape, dtype=np.uint8)
 
@@ -258,6 +202,8 @@ class MeasurementLens:
         raios: list = list()
         # Step #6
 
+        image_copy = image.copy()
+
         for i in range(N):
             # Step #6a
             tmp = np.zeros_like(img_bw)
@@ -275,7 +221,6 @@ class MeasurementLens:
             cv2.line(tmp, (centroid_x, centroid_y), (largura, altura), 255, 5)
 
             # Step #6d
-
             (row, col) = np.nonzero(np.logical_and(tmp, ref))
 
             radius = np.sqrt(((col[0] - centroid_x) ** 2.0) + ((row[0] - centroid_y) ** 2.0))
@@ -289,16 +234,19 @@ class MeasurementLens:
             # Step #6e
             cv2.line(out, (centroid_x, centroid_y), (col[0], row[0]), (0, 255, 0), 1)
 
+        first, second = self.find_max_values(raios)
+
         values = dict(
             horizontal=floor(largura_lente_pixel * scale),
             vertical=floor(altura_lente_pixel * scale),
-            diagonal=floor(diagonal * scale),
-            oma=raios
+            diagonal=floor((first + second) * scale),
+            oma_medido=raios,
+            oma_invertido=raios[::-1]
         )
 
-        return out, values
+        return values
 
-    def run(self, image: np.ndarray):
+    def run(self, image: np.ndarray, side: str):
 
         h, w = image.shape[:2]
 
@@ -311,23 +259,98 @@ class MeasurementLens:
 
         out = image.copy()
 
-        me, values = self.measurement_lens(image=out, img_bw=img_bw, contours=contours)
+        values = self.measurement_lens(image=out, img_bw=img_bw, contours=contours, side=side)
+
+        if isinstance(values, dict):
+            if values.get("erro") == 'Aruco not found':
+                data = 1
+
+                return values
+
+        oma_invertido_values = values.pop("oma_invertido")
+        oma_medido_values = values.pop("oma_medido")
+
+        total_values = 360
+
+        if side == "direito":
+            oma_medido = [f"R={';'.join(str(i) for i in oma_medido_values)}" for _ in
+                          range(total_values // 10)]
+
+            var_invertido = "TRCFMT=1;360;E;R;F \n"
+            valor_oma_medido = var_invertido + oma_medido[0]
+
+            oma_invertido = [f"R={';'.join(str(i) for i in oma_invertido_values)}" for _ in
+                             range(total_values // 10)]
+
+            var_invertido = "TRCFMT=1;360;E;L;F \n"
+            valor_oma_invertido = var_invertido + oma_invertido[0]
+
+            resultato_total = valor_oma_medido + valor_oma_invertido
+
+        if side == "esquerdo":
+            oma_medido = [f"R={';'.join(str(i) for i in oma_medido_values)}" for _ in
+                          range(total_values // 10)]
+
+            var_invertido = "TRCFMT=1;360;E;R;F \n"
+            valor_oma_medido = var_invertido + oma_medido[0]
+
+            oma_invertido = [f"R={';'.join(str(i) for i in oma_invertido_values)}" for _ in
+                             range(total_values // 10)]
+
+            var_invertido = "TRCFMT=1;360;E;R;F \n"
+            valor_oma_invertido = var_invertido + oma_invertido[0]
+
+            resultato_total = valor_oma_medido + valor_oma_invertido
 
         data = dict(
-            me=me,
-            values=values
+
+            values=values,
+            oma=resultato_total
         )
 
         return data
 
 
 if __name__ == '__main__':
-    # file = r'C:\Users\Sandro Bispo\Desktop\photo_2023-03-22_08-56-00.jpg'
-    file = '/home/andre/Desktop/T3Labs/inpecao_lentes/photo_2023-03-31_11-56-54.jpg'
-    image = cv2.imread(file)
-
+    # file = '/home/andre/Desktop/accert/imagens/4a6f187a-da05-4e89-81a0-d15989242db2_mg4n6r.jpg'
+    # file = '/home/andre/Desktop/accert/imagens/photo_2023-03-29_14-01-43.jpg'
+    # file = '/home/andre/Desktop/accert/measure/data/images/2dcc95dc-8707-48f5-a86e-d4c5bac57794_fymtfv.jpg'
+    # file = '/home/andre/Desktop/accert/measure/data/884e7bdb-17d4-4fc0-b4f6-153f6bda5bf9_ngwoke.jpg'
+    # file = '/home/andre/Desktop/accert/measure/data/5fdd241f-c534-4ab0-b712-6a08e5d3f096_ugueuk.jpg'
+    file = '/home/andre/Desktop/accert/measure/data/images/5fdd241f-c534-4ab0-b712-6a08e5d3f096_ugueuk.jpg'
+    image = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
+    # cv2.namedWindow("tet", cv2.WINDOW_KEEPRATIO)
+    # cv2.imshow("tet", image)
+    cv2.waitKey(0)
     measurement = MeasurementLens()
 
-    _, values = measurement.run(image=image)
+    values = measurement.run(image=image, side="direito")
 
-    print(values)
+    # print(values)
+
+    values_per_line = 10
+    total_values = 360
+
+    # Generate the values using the given format
+    values = [f"R={';'.join(str(2750 + i) for i in range(values_per_line))}" for _ in
+              range(total_values // values_per_line)]
+
+    # Define the number of values per line and the total number of values
+    values_per_line = 10
+    total_values = 360
+
+    # Generate the values in the desired format
+    values_per_line = 10
+    total_values = 360
+
+    # Generate the values in the desired format
+    values = [f"R={';'.join(str(2750 + i) for i in range(values_per_line))};" for _ in
+              range(total_values // values_per_line)]
+    remainder = total_values % values_per_line
+    if remainder > 0:
+        values.append(f"R={';'.join(str(2750 + i) for i in range(remainder))};")
+
+    # Accumulate the values in a string
+    cumulated_str = ' '.join(values)
+
+    print(cumulated_str)

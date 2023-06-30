@@ -1,72 +1,88 @@
-import json
 import urllib
 import urllib.request
+from pathlib import Path
 
 import cv2
 import numpy as np
-import requests
+from django.contrib.auth import authenticate
+from django.core.files import File
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from apps.medicao_lente.measure_lens import MeasurementLens
 from apps.medicao_lente.models import DadosMedicao
 from .decorators import autenticacao_necessaria
 from .form import LoginForm
+from ..usuarios.models import Usuarios
 
 mlens = MeasurementLens()
 
 
 # @api_view(['POST', 'GET'])
 # @permission_classes([IsAuthenticated])
+# @autenticacao_necessaria
 # @login_required
-
-@autenticacao_necessaria
 def salvar_registro(request):
     if request.method == "POST":
         image = request.FILES.get('image')
 
-        if request.POST.get('olho_direito') == "on":
-            leituraDireito = True
-        else:
-            leituraDireito = False
-
-        if request.POST.get('olho_esquerdo') == "on":
-            leituraEsquerdo = True
-        else:
-            leituraEsquerdo = False
+        side = None
+        if request.POST.get('side'):
+            side = request.POST.get('side')
 
         dnp = 0
         if request.POST.get('DNP'):
             dnp = request.POST.get('DNP')
 
+        ponte = 0
+        if request.POST.get('ponte'):
+            ponte = request.POST.get('ponte')
+
+        user = Usuarios.objects.get(id="23891265-80e6-44d8-88de-b3573bcf8bfc")
+
         medicao = {
-            'DNP': int(dnp),
+            'dnp': int(dnp),
             'altura': request.POST.get('altura'),
-            'leituraDireito': leituraDireito,
-            'leituraEsquerdo': leituraEsquerdo,
+            'ponte': ponte,
             'OS': request.POST.get('OS'),
-            'cnpjOtica': request.POST.get('cnpj_otica'),
-            'cnpjLaboratorio': request.POST.get('cnpj_laboratorio'),
-            'image': request.FILES.get("image")
+            'cnpj_otica': request.POST.get('cnpj_otica'),
+            'cnpj_laboratorio': request.POST.get('cnpj_laboratorio'),
+            'imagem_lente': request.FILES.get("image"),
+
+            'criado_por': user
         }
 
         _medicao = DadosMedicao.objects.create(**medicao)
 
-        id_file_url = urllib.request.urlopen(_medicao.image.url)
+        id_file_url = urllib.request.urlopen(_medicao.imagem_lente.url)
         id_file_cloudnary = np.asarray(bytearray(id_file_url.read()), dtype=np.uint8)
         _image = cv2.imdecode(id_file_cloudnary, cv2.IMREAD_GRAYSCALE)
-        cv2.imwrite("test.jpg", _image)
+        lens = mlens.run(image=_image, side=side)
 
-        lens = mlens.run(image=_image)
+        if lens.get("erro") == 'Aruco not found':
+            return HttpResponse(lens["erro"])
 
-        _medicao.horizontal = lens["horizontal"]
-        _medicao.vertical = lens["vertical"]
-        _medicao.diagonalMaior = lens["diagonal_maior"]
-        _medicao.save()
+        _medicao.horizontal = lens["values"]["horizontal"]
+        _medicao.vertical = lens["values"]["vertical"]
+        _medicao.diagonal = lens["values"]["diagonal"]
+        _medicao.oma = lens["oma"]
+        _medicao.processado = True
+
+        name = f"{str(_medicao.OS)}_{str(_medicao.id)}.txt"
+
+        with open(name, 'w', encoding='utf-8') as file:
+            file.write(lens["oma"])
+
+        path = Path(name)
+        with path.open(mode="rb") as f:
+            _medicao.oma_file = File(f, name=path.name)
+            _medicao.save()
 
         return render(request, 'app/obras.html')
 
     if request.method == "GET":
-        medicao = DadosMedicao.objects.values()
+        # user = Usuarios.objects.get(id="23891265-80e6-44d8-88de-b3573bcf8bfc")
+        medicao = DadosMedicao.objects.filter(criado_por_id="23891265-80e6-44d8-88de-b3573bcf8bfc").values()
 
         contexto = {
             "medicoes": medicao
@@ -76,7 +92,7 @@ def salvar_registro(request):
 
 
 # @login_required
-@autenticacao_necessaria
+# @autenticacao_necessaria
 def documentacao_1(request):
     medicao = DadosMedicao.objects.all().values()
 
@@ -110,34 +126,14 @@ def upload(request):
     return render(request, 'app/upload.html')
 
 
-def autenticar(username, password):
-    url = 'http://144.22.211.65/api/restacert/v1/auth/loginweb/'
-    data = {
-        "password": password,
-        "username": username
-    }
-    json_data = json.dumps(data)
-    headers = {
-        "Content-Type": "application/json"
-    }
-    r = requests.post(url, data=json_data, headers=headers)
-    if r.status_code == 200:
-        access_token = r.json()['accessToken']
-        return access_token
-    return None
-
-
 def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
-            token = autenticar(username, password)
-            print(f' O token é :{token}')
-            if token is not None:
-                request.session['accessToken'] = token
-                request.session.set_expiry(14400)
+            user = authenticate(request, username=username, password=password)
+            if user:
                 return redirect('obras')
             else:
                 form.add_error(None, 'Username ou password inválidos')

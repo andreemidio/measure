@@ -762,4 +762,12 @@ pyrightconfig.json
 
 test.jpg
 
+.env
+*.sqlite3
+
 # End of https://www.toptal.com/developers/gitignore/api/flask,django,pycharm,pycharm+iml,pycharm+all,python,clion,clion+iml,clion+all
+/medicao_lente.sqlite3
+/ProcfileOLD
+/test_out.jpg
+/apps/medicao_lente/test_out.jpg
+/media
