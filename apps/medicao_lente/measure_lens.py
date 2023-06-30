@@ -240,11 +240,9 @@ class MeasurementLens:
             horizontal=floor(largura_lente_pixel * scale),
             vertical=floor(altura_lente_pixel * scale),
             diagonal=floor((first + second) * scale),
-            oma=raios,
-            oma_lado_2=raios[::-1]
+            oma_medido=raios,
+            oma_invertido=raios[::-1]
         )
-
-        print(values)
 
         return out, values
 
@@ -269,32 +267,48 @@ class MeasurementLens:
 
                 return values
 
-        # values["oma"]
+        oma_invertido_values = values.pop("oma_invertido")
+        oma_medido_values = values.pop("oma_medido")
 
-        values_per_line = 10
         total_values = 360
 
-        # Generate the values using the given format
-        oma_values = [f"R={';'.join(str(v) for i, v in enumerate(values['oma']))}\n" for _ in
-                      range(len(values['oma']) // values_per_line)]
+        if side == "direito":
+            oma_medido = [f"R={';'.join(str(i) for i in oma_medido_values)}" for _ in
+                          range(total_values // 10)]
 
-        # Open the file for writing
-        with open('/home/andre/Desktop/accert/measure/data/images/output.txt', 'w') as file:
-            # Write the values to the file
-            for i, v in enumerate(oma_values):
-                # Write the value to the file
-                file.write(v)
+            var_invertido = "TRCFMT=1;360;E;R;F \n"
+            valor_oma_medido = var_invertido + oma_medido[0]
 
-                # Check if it's the last value in the line
-                if (i + 1) % values_per_line == 0:
-                    file.write('\n')  # Add a new line
-                else:
-                    file.write(' ')  # Add a space between values
+            oma_invertido = [f"R={';'.join(str(i) for i in oma_invertido_values)}" for _ in
+                             range(total_values // 10)]
+
+            var_invertido = "TRCFMT=1;360;E;L;F \n"
+            valor_oma_invertido = var_invertido + oma_invertido[0]
+
+            resultato_total = valor_oma_medido + valor_oma_invertido
+
+        if side == "esquerdo":
+            oma_medido = [f"R={';'.join(str(i) for i in oma_medido_values)}" for _ in
+                          range(total_values // 10)]
+
+            var_invertido = "TRCFMT=1;360;E;R;F \n"
+            valor_oma_medido = var_invertido + oma_medido[0]
+
+            oma_invertido = [f"R={';'.join(str(i) for i in oma_invertido_values)}" for _ in
+                             range(total_values // 10)]
+
+            var_invertido = "TRCFMT=1;360;E;R;F \n"
+            valor_oma_invertido = var_invertido + oma_invertido[0]
+
+            resultato_total = valor_oma_medido + valor_oma_invertido
+
+        values = [f"R={';'.join(str(i) for i in oma_invertido_values)}" for _ in
+                  range(total_values // 10)]
 
         data = dict(
 
             values=values,
-            oma=oma_values
+            oma=resultato_total
         )
 
         return data
@@ -315,4 +329,31 @@ if __name__ == '__main__':
 
     values = measurement.run(image=image, side="direito")
 
-    print(values)
+    # print(values)
+
+    values_per_line = 10
+    total_values = 360
+
+    # Generate the values using the given format
+    values = [f"R={';'.join(str(2750 + i) for i in range(values_per_line))}" for _ in
+              range(total_values // values_per_line)]
+
+    # Define the number of values per line and the total number of values
+    values_per_line = 10
+    total_values = 360
+
+    # Generate the values in the desired format
+    values_per_line = 10
+    total_values = 360
+
+    # Generate the values in the desired format
+    values = [f"R={';'.join(str(2750 + i) for i in range(values_per_line))};" for _ in
+              range(total_values // values_per_line)]
+    remainder = total_values % values_per_line
+    if remainder > 0:
+        values.append(f"R={';'.join(str(2750 + i) for i in range(remainder))};")
+
+    # Accumulate the values in a string
+    cumulated_str = ' '.join(values)
+
+    print(cumulated_str)
