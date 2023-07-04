@@ -40,6 +40,13 @@ def salvar_registro(request):
 
         user = Usuarios.objects.get(email="andresjc2008@gmail.com")
 
+        os = DadosMedicao.objects.get(OS=request.POST.get('OS'))
+
+        if os:
+     
+
+            return HttpResponse("OS já cadastrada")
+
         medicao = {
             'dnp': int(dnp),
             'altura': request.POST.get('altura'),
@@ -48,14 +55,14 @@ def salvar_registro(request):
             'cnpj_otica': request.POST.get('cnpj_otica'),
             'cnpj_laboratorio': request.POST.get('cnpj_laboratorio'),
             'imagem_lente': request.FILES.get("image"),
-
             'criado_por': user
         }
 
         _medicao = DadosMedicao.objects.create(**medicao)
 
         id_file_url = urllib.request.urlopen(_medicao.imagem_lente.url)
-        id_file_cloudnary = np.asarray(bytearray(id_file_url.read()), dtype=np.uint8)
+        id_file_cloudnary = np.asarray(
+            bytearray(id_file_url.read()), dtype=np.uint8)
         _image = cv2.imdecode(id_file_cloudnary, cv2.IMREAD_GRAYSCALE)
         lens = mlens.run(image=_image, side=side)
 
@@ -82,7 +89,8 @@ def salvar_registro(request):
 
     if request.method == "GET":
         # user = Usuarios.objects.get(id="23891265-80e6-44d8-88de-b3573bcf8bfc")
-        medicao = DadosMedicao.objects.filter(criado_por_id="23891265-80e6-44d8-88de-b3573bcf8bfc").values()
+        medicao = DadosMedicao.objects.filter(
+            criado_por_id="23891265-80e6-44d8-88de-b3573bcf8bfc").values()
 
         contexto = {
             "medicoes": medicao

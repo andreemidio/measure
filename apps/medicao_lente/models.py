@@ -46,7 +46,7 @@ def generate_uuid4_filename_txt(instance, filename):
 
 class DadosMedicao(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    OS = models.CharField(max_length=255, null=True, blank=True)
+    OS = models.CharField(max_length=255, unique=True,null=True, blank=True)
     horizontal = models.FloatField(null=True, blank=True)
     vertical = models.FloatField(null=True, blank=True)
     diagonal = models.FloatField(null=True, blank=True)

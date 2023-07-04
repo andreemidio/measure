@@ -270,7 +270,7 @@ class MeasurementLens:
         oma_invertido_values = values.pop("oma_invertido")
         oma_medido_values = values.pop("oma_medido")
 
-        total_values = 360
+        total_values = 362
 
         if side == "direito":
             oma_medido = [f"R={';'.join(str(i) for i in oma_medido_values)}\n" for _ in
