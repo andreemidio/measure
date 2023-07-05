@@ -40,9 +40,9 @@ def salvar_registro(request):
 
         user = Usuarios.objects.get(email="andresjc2008@gmail.com")
 
-        os = DadosMedicao.objects.get(OS=request.POST.get('OS'))
+        os = DadosMedicao.objects.filter(OS=request.POST.get('OS')).exists()
 
-        if os:
+        if os is True:
      
 
             return HttpResponse("OS já cadastrada")
