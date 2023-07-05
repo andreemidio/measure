@@ -43,8 +43,6 @@ def salvar_registro(request):
         os = DadosMedicao.objects.filter(OS=request.POST.get('OS')).exists()
 
         if os is True:
-     
-
             return HttpResponse("OS já cadastrada")
 
         medicao = {
