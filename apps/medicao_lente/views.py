@@ -47,7 +47,6 @@ def salvar_registro(request):
 
         medicao = {
             'dnp': int(dnp),
-            'altura': request.POST.get('altura'),
             'ponte': ponte,
             'OS': request.POST.get('OS'),
             'cnpj_otica': request.POST.get('cnpj_otica'),
@@ -73,7 +72,7 @@ def salvar_registro(request):
         _medicao.oma = lens["oma"]
         _medicao.processado = True
 
-        name = f"{str(_medicao.OS)}_{str(_medicao.id)}.vca"
+        name = f"os_{str(_medicao.OS)}_id_{str(_medicao.id)}.vca"
 
         with open(name, 'w', encoding='utf-8') as file:
             file.write(lens["oma"])
