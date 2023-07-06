@@ -9,16 +9,15 @@
                 {% for  medicao in medicoes %}
                     <div class="box">
                         <div>
-                            <div class="box-title">OS {{ medicao.OS }}</div>
-                            <div class="box-title">Horizontal {{ medicao.horizontal }}</div>
-                            <div class="box-title">Verical {{ medicao.vertical }}</div>
+                            <div class="box-title">OS: {{ medicao.OS }}</div>
+                            <div class="box-title">DNP: {{ medicao.dnp }}</div>
+                            <div class="box-title">Ponte: {{ medicao.ponte }}</div>
+                            <div class="box-title">Horizontal: {{ medicao.horizontal }}</div>
+                            <div class="box-title">Verical: {{ medicao.vertical }}</div>
+                            <div class="box-title">Diagonal Maior: {{ medicao.diagonal }}</div>
                             <div class="box-title"><a href="{{ medicao.oma_file.url }}" download>OMA Arquivo</a></div>
-                            <div class="box-title">Diagonal Maior {{ medicao.diagonalMaior }}</div>
-                            <div class="box-title">DNP {{ medicao.DNP }}</div>
-                            <div class="box-title">PONTE {{ medicao.ponte }}</div>
-                            <div class="box-title">Altura {{ medicao.altura }}</div>
-                            <div class="box-title">CNPJ Otica {{ medicao.cnpjOtica }}</div>
-                            <div class="box-title">CNPJ Lab {{ medicao.cnpjLaboratorio }}</div>
+                            <div class="box-title">CNPJ Otica: {{ medicao.cnpj_otica }}</div>
+                            <div class="box-title">CNPJ Lab: {{ medicao.cnpj_laboratorio }}</div>
                         </div>
                     </div>
                 {% endfor %}
