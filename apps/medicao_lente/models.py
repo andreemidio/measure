@@ -11,7 +11,6 @@ from apps.usuarios.models import Usuarios
 def upload_image_lente(instance, filename):
     return f"{instance.id_lente}-{filename}"
 
-
 def generate_uuid4_filename(instance, filename):
     """
     Generates a uuid4 (random) filename, keeping file extension
@@ -27,7 +26,6 @@ def generate_uuid4_filename(instance, filename):
 
     return resultado
 
-
 def generate_uuid4_filename_txt(instance, filename):
     """
     Generates a uuid4 (random) filename, keeping file extension
@@ -42,7 +40,6 @@ def generate_uuid4_filename_txt(instance, filename):
     resultado = f'oma-lens/{basename.__str__()}{ext}'
 
     return resultado
-
 
 class DadosMedicao(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
