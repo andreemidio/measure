@@ -86,8 +86,7 @@ def salvar_registro(request):
 
     if request.method == "GET":
         # user = Usuarios.objects.get(id="23891265-80e6-44d8-88de-b3573bcf8bfc")
-        medicao = DadosMedicao.objects.filter(
-            criado_por_id="23891265-80e6-44d8-88de-b3573bcf8bfc").values()
+        medicao = DadosMedicao.objects.filter().values()
 
         contexto = {
             "medicoes": medicao

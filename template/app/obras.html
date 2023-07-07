@@ -32,13 +32,21 @@
                         <div class="input" type="text">
                             <div>
                                 <h5 placeholder="HORIZONTAL" style="color: black;" id="first_name7" type="text"
-                                    class="validate" name="horizontal">Diagonal Maior: {{ medicao.diagonalMaior }}
+                                    class="validate" name="horizontal">Diagonal Maior: {{ medicao.diagonal }}
                                     mm</h5>
+                            </div>
+                        </div>
+                        <div class="input" type="text">
+                            <div>
+                                <h5 placeholder="OMA" style="color: black;" id="first_name7" type="text"
+                                    class="validate" name="horizontal"><a href="{{ medicao.oma_file.url }}" download>Arquivo OMA</a>
+                                </h5>
                             </div>
                         </div>
 
                     {% endif %}
                 {% endfor %}
+                <br>
                 <div>
 
                     <div>
