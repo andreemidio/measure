@@ -98,7 +98,7 @@ def salvar_registro(request):
 # @login_required
 # @autenticacao_necessaria
 def documentacao_1(request):
-    medicao = DadosMedicao.objects.all()
+    medicao = DadosMedicao.objects.filter(processado=True)
 
     contexto = {
         "medicoes": medicao,
