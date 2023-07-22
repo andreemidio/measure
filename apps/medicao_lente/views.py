@@ -78,6 +78,7 @@ def salvar_registro(request):
         hbox = f'HBOX={lens["values"]["horizontal"]};{lens["values"]["horizontal"]}\n'
         vbox = f'HBOX={lens["values"]["horizontal"]};{lens["values"]["horizontal"]}\n'
         fed = f'FED={lens["values"]["diagonal"]};{lens["values"]["diagonal"]}\n'
+        dbl = f'DBL={ponte}\n'
 
         with open(name, 'w', encoding='utf-8') as file:
             file.write(os)
