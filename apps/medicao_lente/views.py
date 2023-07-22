@@ -74,10 +74,20 @@ def salvar_registro(request):
 
         name = f"OS_{str(_medicao.OS)}_ID_{str(_medicao.id)}.vca"
 
+        os = f'JOB="{_medicao.OS}"'
+        hbox = f'HBOX={lens["values"]["horizontal"]};{lens["values"]["horizontal"]}'
+        vbox = f'HBOX={lens["values"]["horizontal"]};{lens["values"]["horizontal"]}'
+        fed = f'HBOX={lens["values"]["diagonal"]};{lens["values"]["diagonal"]}'
+
         with open(name, 'w', encoding='utf-8') as file:
+            file.write(os)
             file.write(lens["oma"])
+            file.write(hbox)
+            file.write(vbox)
+            file.write(fed)
 
         path = Path(name)
+
         with path.open(mode="rb") as f:
             _medicao.oma_file = File(f, name=path.name)
             _medicao.save()
