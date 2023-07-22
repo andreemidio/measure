@@ -86,6 +86,7 @@ def salvar_registro(request):
             file.write(hbox)
             file.write(vbox)
             file.write(fed)
+            file.write(dbl)
 
         path = Path(name)
 
