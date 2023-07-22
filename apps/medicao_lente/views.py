@@ -77,7 +77,7 @@ def salvar_registro(request):
         os = f'JOB="{_medicao.OS}"'
         hbox = f'HBOX={lens["values"]["horizontal"]};{lens["values"]["horizontal"]}\n'
         vbox = f'HBOX={lens["values"]["horizontal"]};{lens["values"]["horizontal"]}\n'
-        fed = f'HBOX={lens["values"]["diagonal"]};{lens["values"]["diagonal"]}\n'
+        fed = f'FED={lens["values"]["diagonal"]};{lens["values"]["diagonal"]}\n'
 
         with open(name, 'w', encoding='utf-8') as file:
             file.write(os)
