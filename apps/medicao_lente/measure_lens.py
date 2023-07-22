@@ -291,13 +291,13 @@ class MeasurementLens:
             oma_medido = [f"\nR={';'.join(str(i) for i in oma_medido_values)}\n" for _ in
                           range(total_values // 10)]
 
-            var_invertido = "\nTRCFMT=1;360;E;R;F \n"
+            var_invertido = "\nTRCFMT=1;360;E;R;F\n"
             valor_oma_medido = var_invertido + oma_medido[0]
 
             oma_invertido = [f"\nR={';'.join(str(i) for i in oma_invertido_values)}\n" for _ in
                              range(total_values // 10)]
 
-            var_invertido = "\nTRCFMT=1;360;E;R;F \n"
+            var_invertido = "\nTRCFMT=1;360;E;R;F\n"
             valor_oma_invertido = var_invertido + oma_invertido[0]
 
             resultato_total = valor_oma_medido + valor_oma_invertido
