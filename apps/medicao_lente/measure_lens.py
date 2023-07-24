@@ -274,40 +274,63 @@ class MeasurementLens:
 
         if side == "direito":
             oma_medido = [f"R={';'.join(str(oma_medido_values[i]) for i in range(j, j + 10))};\n" for j in
-                      range(0, len(oma_medido_values), 10)]
+                          range(0, len(oma_medido_values), 10)]
 
             oma_medido = ''.join(oma_medido)
 
             var_invertido = "TRCFMT=1;360;E;R;F\n"
             valor_oma_medido = var_invertido + oma_medido
 
+            oma_medido_hbox = f'HBOX={values["horizontal"]};{values["horizontal"]}\n'
+            oma_medido_vbox = f'VBOX={values["vertical"]};{values["vertical"]}\n'
+            oma_medido_fed = f'FED={values["diagonal"]};{values["diagonal"]}\n'
+
+            valor_oma_medido = valor_oma_medido + oma_medido_hbox + oma_medido_vbox + oma_medido_fed
+
             oma_invertido = [f"R={';'.join(str(oma_invertido_values[i]) for i in range(j, j + 10))};\n" for j in
-                      range(0, len(oma_invertido_values), 10)]
+                             range(0, len(oma_invertido_values), 10)]
 
             oma_invertido = ''.join(oma_invertido)
 
             var_invertido = "TRCFMT=1;360;E;L;F\n"
             valor_oma_invertido = var_invertido + oma_invertido
 
+            oma_invertido_hbox = f'HBOX={values["horizontal"]};{values["horizontal"]}\n'
+            oma_invertido_vbox = f'VBOX={values["vertical"]};{values["vertical"]}\n'
+            oma_invertido_fed = f'FED={values["diagonal"]};{values["diagonal"]}\n'
+
+            valor_oma_invertido = valor_oma_invertido + oma_invertido_hbox + oma_invertido_vbox + oma_invertido_fed
+
             resultato_total = valor_oma_medido + valor_oma_invertido
 
         if side == "esquerdo":
             oma_medido = [f"R={';'.join(str(oma_medido_values[i]) for i in range(j, j + 10))};\n" for j in
-                      range(0, len(oma_medido_values), 10)]
+                          range(0, len(oma_medido_values), 10)]
 
             oma_medido = ''.join(oma_medido)
 
             var_invertido = "TRCFMT=1;360;E;R;F\n"
             valor_oma_medido = var_invertido + oma_medido
 
+            oma_medido_hbox = f'HBOX={values["horizontal"]};{values["horizontal"]}\n'
+            oma_medido_vbox = f'VBOX={values["vertical"]};{values["vertical"]}\n'
+            oma_medido_fed = f'FED={values["diagonal"]};{values["diagonal"]}\n'
+
+            valor_oma_medido = valor_oma_medido + oma_medido_hbox + oma_medido_vbox + oma_medido_fed
 
             oma_invertido = [f"R={';'.join(str(oma_invertido_values[i]) for i in range(j, j + 10))};\n" for j in
-                      range(0, len(oma_invertido_values), 10)]
+                             range(0, len(oma_invertido_values), 10)]
 
             oma_invertido = ''.join(oma_invertido)
 
             var_invertido = "TRCFMT=1;360;E;R;F\n"
             valor_oma_invertido = var_invertido + oma_invertido
+
+            oma_invertido_hbox = f'HBOX={values["horizontal"]};{values["horizontal"]}\n'
+            oma_invertido_vbox = f'VBOX={values["vertical"]};{values["vertical"]}\n'
+            oma_invertido_fed = f'FED={values["diagonal"]};{values["diagonal"]}\n'
+
+            valor_oma_invertido = valor_oma_invertido + oma_invertido_hbox + oma_invertido_vbox + oma_invertido_fed
 
             resultato_total = valor_oma_medido + valor_oma_invertido
 
