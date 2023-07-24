@@ -47,6 +47,7 @@ class DadosMedicao(models.Model):
     horizontal = models.FloatField(null=True, blank=True)
     vertical = models.FloatField(null=True, blank=True)
     diagonal = models.FloatField(null=True, blank=True)
+    lado = models.CharField(max_length=100)
     imagem_lente = models.ImageField(upload_to=generate_uuid4_filename, blank=True, null=True)
     oma = models.TextField(null=True, blank=True)
     oma_file = models.FileField(upload_to="oma-lens/", null=True, blank=True)

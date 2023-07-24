@@ -48,6 +48,7 @@ def salvar_registro(request):
         medicao = {
             'dnp': int(dnp),
             'ponte': ponte,
+            'lado': side,
             'OS': request.POST.get('OS'),
             'cnpj_otica': request.POST.get('cnpj_otica'),
             'cnpj_laboratorio': request.POST.get('cnpj_laboratorio'),
