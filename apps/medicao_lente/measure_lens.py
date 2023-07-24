@@ -198,7 +198,7 @@ class MeasurementLens:
                      (int(resulato2.coords[1][0]), int(resulato2.coords[1][1])), (255, 255, 255), 2)
 
         # Define total number of angles we want
-        N = 360
+        N = 361
         raios: list = list()
         # Step #6
 
@@ -270,42 +270,52 @@ class MeasurementLens:
         oma_invertido_values = values.pop("oma_invertido")
         oma_medido_values = values.pop("oma_medido")
 
-        total_values = 362
+        total_values = 360
 
         if side == "direito":
-            oma_medido = [f"R={';'.join(str(i) for i in oma_medido_values)}\n" for _ in
-                          range(total_values // 10)]
+            oma_medido = [f"R={';'.join(str(oma_medido_values[i]) for i in range(j, j + 10))};\n" for j in
+                      range(0, len(oma_medido_values), 10)]
 
-            var_invertido = "\nTRCFMT=1;360;E;R;F \n"
-            valor_oma_medido = var_invertido + oma_medido[0]
+            oma_medido = ''.join(oma_medido)
 
-            oma_invertido = [f"\nR={';'.join(str(i) for i in oma_invertido_values)}\n" for _ in
-                             range(total_values // 10)]
+            var_invertido = "TRCFMT=1;360;E;R;F\n"
+            valor_oma_medido = var_invertido + oma_medido
 
-            var_invertido = "\n TRCFMT=1;360;E;L;F \n"
-            valor_oma_invertido = var_invertido + oma_invertido[0]
+            oma_invertido = [f"R={';'.join(str(oma_invertido_values[i]) for i in range(j, j + 10))};\n" for j in
+                      range(0, len(oma_invertido_values), 10)]
+
+            oma_invertido = ''.join(oma_invertido)
+
+            var_invertido = "TRCFMT=1;360;E;L;F\n"
+            valor_oma_invertido = var_invertido + oma_invertido
 
             resultato_total = valor_oma_medido + valor_oma_invertido
 
         if side == "esquerdo":
-            oma_medido = [f"\nR={';'.join(str(i) for i in oma_medido_values)}\n" for _ in
-                          range(total_values // 10)]
+            oma_medido = [f"R={';'.join(str(oma_medido_values[i]) for i in range(j, j + 10))};\n" for j in
+                      range(0, len(oma_medido_values), 10)]
 
-            var_invertido = "\nTRCFMT=1;360;E;R;F\n"
-            valor_oma_medido = var_invertido + oma_medido[0]
+            oma_medido = ''.join(oma_medido)
 
-            oma_invertido = [f"\nR={';'.join(str(i) for i in oma_invertido_values)}\n" for _ in
-                             range(total_values // 10)]
+            var_invertido = "TRCFMT=1;360;E;R;F\n"
+            valor_oma_medido = var_invertido + oma_medido
 
-            var_invertido = "\nTRCFMT=1;360;E;R;F\n"
-            valor_oma_invertido = var_invertido + oma_invertido[0]
+
+            oma_invertido = [f"R={';'.join(str(oma_invertido_values[i]) for i in range(j, j + 10))};\n" for j in
+                      range(0, len(oma_invertido_values), 10)]
+
+            oma_invertido = ''.join(oma_invertido)
+
+            var_invertido = "TRCFMT=1;360;E;R;F\n"
+            valor_oma_invertido = var_invertido + oma_invertido
 
             resultato_total = valor_oma_medido + valor_oma_invertido
 
         data = dict(
 
             values=values,
-            oma=resultato_total
+            oma=resultato_total,
+            # t=cumulated_str
         )
 
         return data
@@ -326,31 +336,26 @@ if __name__ == '__main__':
 
     values = measurement.run(image=image, side="direito")
 
-    # print(values)
+    print(values)
 
-    values_per_line = 10
-    total_values = 360
+    # values_per_line = 10
+    # total_values = 360
 
     # Generate the values using the given format
-    values = [f"R={';'.join(str(2750 + i) for i in range(values_per_line))}" for _ in
-              range(total_values // values_per_line)]
-
-    # Define the number of values per line and the total number of values
-    values_per_line = 10
-    total_values = 360
-
-    # Generate the values in the desired format
-    values_per_line = 10
-    total_values = 360
-
-    # Generate the values in the desired format
-    values = [f"R={';'.join(str(2750 + i) for i in range(values_per_line))};" for _ in
-              range(total_values // values_per_line)]
-    remainder = total_values % values_per_line
-    if remainder > 0:
-        values.append(f"R={';'.join(str(2750 + i) for i in range(remainder))};")
-
-    # Accumulate the values in a string
-    cumulated_str = ' '.join(values)
-
-    print(cumulated_str)
+    # values = [f"R={';'.join(str(2750 + i) for i in range(values_per_line))}" for _ in
+    #           range(total_values // values_per_line)]
+    #
+    # total_values = 360
+    #
+    # values_per_line = 10
+    # total_values = 360
+    #
+    # values = [f"R={';'.join(str(2750 + i) for i in range(values_per_line))};\n" for _ in
+    #           range(total_values // 10)]
+    # remainder = total_values % 10
+    # if remainder > 0:
+    #     values.append(f"R={';'.join(str(2750 + i) for i in range(remainder))};\n")
+    #
+    # cumulated_str = ''.join(values)
+    #
+    # print(cumulated_str)
