@@ -74,7 +74,7 @@ def salvar_registro(request):
 
         name = f"OS_{str(_medicao.OS)}_ID_{str(_medicao.id)}.vca"
 
-        os = f'JOB="{_medicao.OS}"'
+        os = f'JOB="{_medicao.OS}"\n'
         hbox = f'HBOX={lens["values"]["horizontal"]};{lens["values"]["horizontal"]}\n'
         vbox = f'HBOX={lens["values"]["horizontal"]};{lens["values"]["horizontal"]}\n'
         fed = f'FED={lens["values"]["diagonal"]};{lens["values"]["diagonal"]}\n'
