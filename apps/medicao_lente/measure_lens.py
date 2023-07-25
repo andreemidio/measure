@@ -273,7 +273,7 @@ class MeasurementLens:
         total_values = 360
 
         if side == "direito":
-            oma_medido = [f"R={';'.join(str(oma_medido_values[i]) for i in range(j, j + 10))};\n" for j in
+            oma_medido = [f"R={';'.join(str(oma_medido_values[i]) for i in range(j, j + 10))}\n" for j in
                           range(0, len(oma_medido_values), 10)]
 
             oma_medido = ''.join(oma_medido)
@@ -287,7 +287,7 @@ class MeasurementLens:
 
             valor_oma_medido = valor_oma_medido + oma_medido_hbox + oma_medido_vbox + oma_medido_fed
 
-            oma_invertido = [f"R={';'.join(str(oma_invertido_values[i]) for i in range(j, j + 10))};\n" for j in
+            oma_invertido = [f"R={';'.join(str(oma_invertido_values[i]) for i in range(j, j + 10))}\n" for j in
                              range(0, len(oma_invertido_values), 10)]
 
             oma_invertido = ''.join(oma_invertido)
@@ -304,7 +304,7 @@ class MeasurementLens:
             resultato_total = valor_oma_medido + valor_oma_invertido
 
         if side == "esquerdo":
-            oma_medido = [f"R={';'.join(str(oma_medido_values[i]) for i in range(j, j + 10))};\n" for j in
+            oma_medido = [f"R={';'.join(str(oma_medido_values[i]) for i in range(j, j + 10))}\n" for j in
                           range(0, len(oma_medido_values), 10)]
 
             oma_medido = ''.join(oma_medido)
@@ -318,7 +318,7 @@ class MeasurementLens:
 
             valor_oma_medido = valor_oma_medido + oma_medido_hbox + oma_medido_vbox + oma_medido_fed
 
-            oma_invertido = [f"R={';'.join(str(oma_invertido_values[i]) for i in range(j, j + 10))};\n" for j in
+            oma_invertido = [f"R={';'.join(str(oma_invertido_values[i]) for i in range(j, j + 10))}\n" for j in
                              range(0, len(oma_invertido_values), 10)]
 
             oma_invertido = ''.join(oma_invertido)
