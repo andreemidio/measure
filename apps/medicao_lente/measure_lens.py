@@ -236,12 +236,23 @@ class MeasurementLens:
 
         first, second = self.find_max_values(raios)
 
+        l = np.array(raios)
+        matrix = l.reshape(36, 10)
+
+        reversed_matrix = matrix[:, ::-1]
+
+        reversed_values_oma = np.array(reversed_matrix)
+
+        reversed_values_oma =  reversed_values_oma.ravel()
+        reversed_values_oma =  reversed_values_oma.tolist()
+
         values = dict(
             horizontal=floor(largura_lente_pixel * scale),
             vertical=floor(altura_lente_pixel * scale),
             diagonal=floor((first + second) * scale),
             oma_medido=raios,
-            oma_invertido=raios[::-1]
+            # oma_invertido=raios[::-1]
+            oma_invertido=reversed_values_oma
         )
 
         return values
