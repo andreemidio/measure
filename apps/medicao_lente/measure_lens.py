@@ -243,8 +243,8 @@ class MeasurementLens:
 
         reversed_values_oma = np.array(reversed_matrix)
 
-        reversed_values_oma =  reversed_values_oma.ravel()
-        reversed_values_oma =  reversed_values_oma.tolist()
+        reversed_values_oma = reversed_values_oma.ravel()
+        reversed_values_oma = reversed_values_oma.tolist()
 
         values = dict(
             horizontal=floor(largura_lente_pixel * scale),
@@ -320,7 +320,7 @@ class MeasurementLens:
 
             oma_medido = ''.join(oma_medido)
 
-            var_invertido = "TRCFMT=1;360;E;R;F\n"
+            var_invertido = "TRCFMT=1;360;E;L;F\n"
             valor_oma_medido = var_invertido + oma_medido
 
             oma_medido_hbox = f'HBOX={values["horizontal"]};{values["horizontal"]}\n'
