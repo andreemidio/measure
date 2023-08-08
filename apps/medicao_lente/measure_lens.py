@@ -222,11 +222,11 @@ class MeasurementLens:
 
         img_bw_flipped = cv2.flip(img_bw, 2)
 
-        cv2.namedWindow("img_bw", cv2.WINDOW_KEEPRATIO)
-        cv2.imshow("img_bw",img_bw)
-        cv2.namedWindow("img_bw_flipped", cv2.WINDOW_KEEPRATIO)
-        cv2.imshow("img_bw_flipped",img_bw_flipped)
-        cv2.waitKey(0)
+        # cv2.namedWindow("img_bw", cv2.WINDOW_KEEPRATIO)
+        # cv2.imshow("img_bw",img_bw)
+        # cv2.namedWindow("img_bw_flipped", cv2.WINDOW_KEEPRATIO)
+        # cv2.imshow("img_bw_flipped",img_bw_flipped)
+        # cv2.waitKey(0)
 
         for i in reversed(range(N)):
             tmp = np.zeros_like(img_bw_flipped)
