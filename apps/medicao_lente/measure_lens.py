@@ -220,14 +220,15 @@ class MeasurementLens:
             raios_oma1.append(round(radius))
             cv2.line(out, (centroid_x, centroid_y), (col[0], row[0]), (0, 255, 0), 1)
 
-        img_bw_flipped = cv2.flip(img_bw, 1)
+        img_bw_flipped = cv2.flip(img_bw, 2)
 
-        #
-        # cv2.imshow("img_bw",img_bw)
-        # cv2.imshow("img_bw_flipped",img_bw_flipped)
-        # cv2.waitKey(0)
+        cv2.namedWindow("img_bw", cv2.WINDOW_KEEPRATIO)
+        cv2.imshow("img_bw",img_bw)
+        cv2.namedWindow("img_bw_flipped", cv2.WINDOW_KEEPRATIO)
+        cv2.imshow("img_bw_flipped",img_bw_flipped)
+        cv2.waitKey(0)
 
-        for i in range(N):
+        for i in reversed(range(N)):
             tmp = np.zeros_like(img_bw_flipped)
             theta = i * (360 / N)
             theta *= np.pi / 180.0
