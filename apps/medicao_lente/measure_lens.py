@@ -112,7 +112,7 @@ class MeasurementLens:
     def read_image(self, filename: str) -> np.ndarray:
         return cv2.imread(filename, 0)
 
-    def measurement_lens(self, image: np.ndarray, img_bw: np.ndarray, contours, side: str):
+    def measurement_lens(self, image: np.ndarray, img_bw: np.ndarray, contours, contours_flipped, side: str):
         scale = self.get_aruco(image)
         if isinstance(scale, dict):
             if scale["erro"]:
@@ -126,12 +126,14 @@ class MeasurementLens:
         img_bw_flipped = cv2.flip(img_bw, 1)
         image_flipped = cv2.flip(image, 1)
 
+        out_flipped = image_flipped.copy()
         ref = np.zeros_like(img_bw)
         ref_flipped = np.zeros_like(img_bw_flipped)
 
 
         cv2.drawContours(ref, contours, 0, 255, 1)
-        cv2.drawContours(ref_flipped, contours, 0, 255, 1)
+
+        cv2.drawContours(ref_flipped, contours_flipped, 0, 255, 1)
 
         # Step #5
         M = cv2.moments(contours[0])
@@ -243,20 +245,25 @@ class MeasurementLens:
         # cv2.imshow("img_bw_flipped",img_bw_flipped)
         # cv2.waitKey(0)
 
-        for i in range(N):
-            tmp = np.zeros_like(img_bw_flipped)
+        for i in reversed(range(N)):
+            tmp_flipped = np.zeros_like(img_bw_flipped)
             theta = i * (360 / N)
             theta *= np.pi / 180.0
             largura = int(centroid_x_flipped + np.cos(theta) * width_flipped)
             altura = int(centroid_y_flipped - np.sin(theta) * height_flipped)
-            cv2.line(tmp, (centroid_x_flipped, centroid_y_flipped), (largura, altura), 255, 5)
-            (row, col) = np.nonzero(np.logical_and(tmp, ref_flipped))
+            cv2.line(tmp_flipped, (centroid_x_flipped, centroid_y_flipped), (largura, altura), 255, 5)
+            (row, col) = np.nonzero(np.logical_and(tmp_flipped, ref_flipped))
             radius = np.sqrt(((col[0] - centroid_x_flipped) ** 2.0) + ((row[0] - centroid_y_flipped) ** 2.0))
             # r, theta = self.cart2polar(col[0], row[0])
             r, ang = self._cartesian_to_polar(col[0], row[0], x_c=centroid_x_flipped, y_c=centroid_y_flipped)
             # raios_oma1.append(round((r * 5) / 2))
             raios_oma2.append(round(radius))
-            cv2.line(out, (centroid_x_flipped, centroid_y_flipped), (col[0], row[0]), (0, 255, 0), 1)
+            cv2.line(out_flipped, (centroid_x_flipped, centroid_y_flipped), (col[0], row[0]), (0, 255, 0), 1)
+
+            # cv2.namedWindow("tmp", cv2.WINDOW_KEEPRATIO)
+            # cv2.imshow("tmp",out_flipped)
+            # cv2.waitKey(0)
+
 
         first, second = self.find_max_values(raios_oma1)
 
@@ -289,12 +296,18 @@ class MeasurementLens:
             image = self._resize_image(image, (1920, 1080))
 
         img_bw = image.copy()
+        img_bw = image.copy()
+
+        img_bw_flipped = cv2.flip(img_bw, 1)
         _canny = self._image_processing(image=img_bw)
         contours = self.find_contours(_canny)
 
+        _canny_flipped = self._image_processing(image=img_bw_flipped)
+        contours_flipped = self.find_contours(_canny_flipped)
+
         out = image.copy()
 
-        values = self.measurement_lens(image=out, img_bw=img_bw, contours=contours, side=side)
+        values = self.measurement_lens(image=out, img_bw=img_bw, contours=contours, contours_flipped=contours_flipped, side=side)
 
         if isinstance(values, dict):
             if values.get("erro") == 'Aruco not found':
