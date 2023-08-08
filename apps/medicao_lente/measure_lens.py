@@ -227,7 +227,7 @@ class MeasurementLens:
         # cv2.imshow("img_bw_flipped",img_bw_flipped)
         # cv2.waitKey(0)
 
-        for i in reversed(range(N)):
+        for i in range(N):
             tmp = np.zeros_like(img_bw_flipped)
             theta = i * (360 / N)
             theta *= np.pi / 180.0
