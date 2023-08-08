@@ -123,7 +123,8 @@ class MeasurementLens:
 
         conto = max(contours, key=cv2.contourArea)
 
-        img_bw_flipped = cv2.flip(img_bw, 0)
+        img_bw_flipped = cv2.flip(img_bw, 1)
+        image_flipped = cv2.flip(image, 1)
 
         ref = np.zeros_like(img_bw)
         ref_flipped = np.zeros_like(img_bw_flipped)
@@ -145,6 +146,9 @@ class MeasurementLens:
         # Get dimensions of the image
         width = image.shape[1]
         height = image.shape[0]
+
+        width_flipped = image_flipped.shape[1]
+        height_flipped = image_flipped.shape[0]
 
         (x, y, w, h) = cv2.boundingRect(contours[0])
 
@@ -239,12 +243,12 @@ class MeasurementLens:
         # cv2.imshow("img_bw_flipped",img_bw_flipped)
         # cv2.waitKey(0)
 
-        for i in reversed(range(N)):
+        for i in range(N):
             tmp = np.zeros_like(img_bw_flipped)
             theta = i * (360 / N)
             theta *= np.pi / 180.0
-            largura = int(centroid_x + np.cos(theta) * width)
-            altura = int(centroid_y - np.sin(theta) * height)
+            largura = int(centroid_x_flipped + np.cos(theta) * width_flipped)
+            altura = int(centroid_y_flipped - np.sin(theta) * height_flipped)
             cv2.line(tmp, (centroid_x_flipped, centroid_y_flipped), (largura, altura), 255, 5)
             (row, col) = np.nonzero(np.logical_and(tmp, ref_flipped))
             radius = np.sqrt(((col[0] - centroid_x_flipped) ** 2.0) + ((row[0] - centroid_y_flipped) ** 2.0))
@@ -252,7 +256,7 @@ class MeasurementLens:
             r, ang = self._cartesian_to_polar(col[0], row[0], x_c=centroid_x_flipped, y_c=centroid_y_flipped)
             # raios_oma1.append(round((r * 5) / 2))
             raios_oma2.append(round(radius))
-            cv2.line(out, (centroid_x, centroid_y), (col[0], row[0]), (0, 255, 0), 1)
+            cv2.line(out, (centroid_x_flipped, centroid_y_flipped), (col[0], row[0]), (0, 255, 0), 1)
 
         first, second = self.find_max_values(raios_oma1)
 
