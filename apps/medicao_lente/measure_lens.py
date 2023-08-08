@@ -123,7 +123,7 @@ class MeasurementLens:
 
         conto = max(contours, key=cv2.contourArea)
 
-        img_bw_flipped = cv2.flip(img_bw, 2)
+        img_bw_flipped = cv2.flip(img_bw, 0)
 
         ref = np.zeros_like(img_bw)
         ref_flipped = np.zeros_like(img_bw_flipped)
