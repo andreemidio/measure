@@ -237,9 +237,9 @@ class MeasurementLens:
             raios_oma1.append(round(radius))
             cv2.line(out, (centroid_x, centroid_y), (col[0], row[0]), (0, 255, 0), 1)
 
-            cv2.namedWindow("tmp", cv2.WINDOW_KEEPRATIO)
-            cv2.imshow("tmp",out)
-            cv2.waitKey(0)
+            # cv2.namedWindow("tmp", cv2.WINDOW_KEEPRATIO)
+            # cv2.imshow("tmp",out)
+            # cv2.waitKey(0)
 
 
         # cv2.namedWindow("img_bw", cv2.WINDOW_KEEPRATIO)
@@ -263,9 +263,9 @@ class MeasurementLens:
             raios_oma2.append(round(radius))
             cv2.line(out_flipped, (centroid_x_flipped, centroid_y_flipped), (col[0], row[0]), (0, 255, 0), 1)
 
-            cv2.namedWindow("tmp", cv2.WINDOW_KEEPRATIO)
-            cv2.imshow("tmp",out_flipped)
-            cv2.waitKey(0)
+            # cv2.namedWindow("tmp", cv2.WINDOW_KEEPRATIO)
+            # cv2.imshow("tmp",out_flipped)
+            # cv2.waitKey(0)
 
 
         first, second = self.find_max_values(raios_oma1)
