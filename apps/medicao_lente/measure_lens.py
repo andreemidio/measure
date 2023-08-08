@@ -220,7 +220,7 @@ class MeasurementLens:
             raios_oma1.append(round(radius))
             cv2.line(out, (centroid_x, centroid_y), (col[0], row[0]), (0, 255, 0), 1)
 
-        img_bw_flipped = cv2.flip(img_bw, 0)
+        img_bw_flipped = cv2.flip(img_bw, 1)
 
         #
         # cv2.imshow("img_bw",img_bw)
