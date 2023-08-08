@@ -123,13 +123,24 @@ class MeasurementLens:
 
         conto = max(contours, key=cv2.contourArea)
 
+        img_bw_flipped = cv2.flip(img_bw, 2)
+
         ref = np.zeros_like(img_bw)
+        ref_flipped = np.zeros_like(img_bw_flipped)
+
+
         cv2.drawContours(ref, contours, 0, 255, 1)
+        cv2.drawContours(ref_flipped, contours, 0, 255, 1)
 
         # Step #5
         M = cv2.moments(contours[0])
         centroid_x = int(M['m10'] / M['m00'])
         centroid_y = int(M['m01'] / M['m00'])
+        # Step #5 Flipped
+        M_flipped = cv2.moments(contours[0])
+        centroid_x_flipped = int(M_flipped['m10'] / M_flipped['m00'])
+        centroid_y_flipped = int(M_flipped['m01'] / M_flipped['m00'])
+
 
         # Get dimensions of the image
         width = image.shape[1]
@@ -220,7 +231,7 @@ class MeasurementLens:
             raios_oma1.append(round(radius))
             cv2.line(out, (centroid_x, centroid_y), (col[0], row[0]), (0, 255, 0), 1)
 
-        img_bw_flipped = cv2.flip(img_bw, 2)
+
 
         # cv2.namedWindow("img_bw", cv2.WINDOW_KEEPRATIO)
         # cv2.imshow("img_bw",img_bw)
@@ -234,11 +245,11 @@ class MeasurementLens:
             theta *= np.pi / 180.0
             largura = int(centroid_x + np.cos(theta) * width)
             altura = int(centroid_y - np.sin(theta) * height)
-            cv2.line(tmp, (centroid_x, centroid_y), (largura, altura), 255, 5)
-            (row, col) = np.nonzero(np.logical_and(tmp, ref))
-            radius = np.sqrt(((col[0] - centroid_x) ** 2.0) + ((row[0] - centroid_y) ** 2.0))
+            cv2.line(tmp, (centroid_x_flipped, centroid_y_flipped), (largura, altura), 255, 5)
+            (row, col) = np.nonzero(np.logical_and(tmp, ref_flipped))
+            radius = np.sqrt(((col[0] - centroid_x_flipped) ** 2.0) + ((row[0] - centroid_y_flipped) ** 2.0))
             # r, theta = self.cart2polar(col[0], row[0])
-            r, ang = self._cartesian_to_polar(col[0], row[0], x_c=centroid_x, y_c=centroid_y)
+            r, ang = self._cartesian_to_polar(col[0], row[0], x_c=centroid_x_flipped, y_c=centroid_y_flipped)
             # raios_oma1.append(round((r * 5) / 2))
             raios_oma2.append(round(radius))
             cv2.line(out, (centroid_x, centroid_y), (col[0], row[0]), (0, 255, 0), 1)
