@@ -199,60 +199,68 @@ class MeasurementLens:
 
         # Define total number of angles we want
         N = 361
-        raios: list = list()
+        raios_oma1: list = list()
+        raios_oma2: list = list()
         # Step #6
 
         image_copy = image.copy()
 
         for i in range(N):
-            # Step #6a
             tmp = np.zeros_like(img_bw)
-
-            # Step #6b
             theta = i * (360 / N)
             theta *= np.pi / 180.0
-
-            # Step #6c
-
             largura = int(centroid_x + np.cos(theta) * width)
-
             altura = int(centroid_y - np.sin(theta) * height)
-
             cv2.line(tmp, (centroid_x, centroid_y), (largura, altura), 255, 5)
-
-            # Step #6d
             (row, col) = np.nonzero(np.logical_and(tmp, ref))
-
             radius = np.sqrt(((col[0] - centroid_x) ** 2.0) + ((row[0] - centroid_y) ** 2.0))
-
             # r, theta = self.cart2polar(col[0], row[0])
             r, ang = self._cartesian_to_polar(col[0], row[0], x_c=centroid_x, y_c=centroid_y)
-
-            # raios.append(round((r * 5) / 2))
-            raios.append(round(radius))
-
-            # Step #6e
+            # raios_oma1.append(round((r * 5) / 2))
+            raios_oma1.append(round(radius))
             cv2.line(out, (centroid_x, centroid_y), (col[0], row[0]), (0, 255, 0), 1)
 
-        first, second = self.find_max_values(raios)
+        img_bw_flipped = cv2.flip(img_bw, 1)
 
-        l = np.array(raios)
-        matrix = l.reshape(36, 10)
+        #
+        # cv2.imshow("img_bw",img_bw)
+        # cv2.imshow("img_bw_flipped",img_bw_flipped)
+        # cv2.waitKey(0)
 
-        reversed_matrix = matrix[:, ::-1]
+        for i in reversed(range(N)):
+            tmp = np.zeros_like(img_bw_flipped)
+            theta = i * (360 / N)
+            theta *= np.pi / 180.0
+            largura = int(centroid_x + np.cos(theta) * width)
+            altura = int(centroid_y - np.sin(theta) * height)
+            cv2.line(tmp, (centroid_x, centroid_y), (largura, altura), 255, 5)
+            (row, col) = np.nonzero(np.logical_and(tmp, ref))
+            radius = np.sqrt(((col[0] - centroid_x) ** 2.0) + ((row[0] - centroid_y) ** 2.0))
+            # r, theta = self.cart2polar(col[0], row[0])
+            r, ang = self._cartesian_to_polar(col[0], row[0], x_c=centroid_x, y_c=centroid_y)
+            # raios_oma1.append(round((r * 5) / 2))
+            raios_oma2.append(round(radius))
+            cv2.line(out, (centroid_x, centroid_y), (col[0], row[0]), (0, 255, 0), 1)
 
-        reversed_values_oma = np.array(reversed_matrix)
+        first, second = self.find_max_values(raios_oma1)
 
-        reversed_values_oma = reversed_values_oma.ravel()
-        reversed_values_oma = reversed_values_oma.tolist()
+        # l = np.array(raios_oma1)
+        # matrix = l.reshape(36, 10)
+        #
+        # reversed_matrix = matrix[:, ::-1]
+        #
+        # reversed_values_oma = np.array(reversed_matrix)
+        #
+        # reversed_values_oma = reversed_values_oma.ravel()
+        # reversed_values_oma = reversed_values_oma.tolist()
 
         values = dict(
             horizontal=floor(largura_lente_pixel * scale),
             vertical=floor(altura_lente_pixel * scale),
             diagonal=floor((first + second) * scale),
-            oma_medido=raios,
-            # oma_invertido=raios[::-1]
-            oma_invertido=reversed_values_oma
+            oma_medido=raios_oma1,
+            # oma_invertido=raios_oma1[::-1]
+            oma_invertido=raios_oma2
         )
 
         return values
@@ -279,6 +287,7 @@ class MeasurementLens:
                 return values
 
         oma_invertido_values = values.pop("oma_invertido")
+        oma_invertido_values.pop()
         oma_medido_values = values.pop("oma_medido")
 
         total_values = 360
