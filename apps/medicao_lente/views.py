@@ -38,24 +38,29 @@ def salvar_registro(request):
         if request.POST.get('ponte'):
             ponte = request.POST.get('ponte')
 
-        user = Usuarios.objects.get(id="23891265-80e6-44d8-88de-b3573bcf8bfc")
+        user = Usuarios.objects.get(email="andresjc2008@gmail.com")
+
+        os = DadosMedicao.objects.filter(OS=request.POST.get('OS')).exists()
+
+        if os is True:
+            return HttpResponse("OS já cadastrada")
 
         medicao = {
             'dnp': int(dnp),
-            'altura': request.POST.get('altura'),
             'ponte': ponte,
+            'lado': side,
             'OS': request.POST.get('OS'),
             'cnpj_otica': request.POST.get('cnpj_otica'),
             'cnpj_laboratorio': request.POST.get('cnpj_laboratorio'),
             'imagem_lente': request.FILES.get("image"),
-
             'criado_por': user
         }
 
         _medicao = DadosMedicao.objects.create(**medicao)
 
         id_file_url = urllib.request.urlopen(_medicao.imagem_lente.url)
-        id_file_cloudnary = np.asarray(bytearray(id_file_url.read()), dtype=np.uint8)
+        id_file_cloudnary = np.asarray(
+            bytearray(id_file_url.read()), dtype=np.uint8)
         _image = cv2.imdecode(id_file_cloudnary, cv2.IMREAD_GRAYSCALE)
         lens = mlens.run(image=_image, side=side)
 
@@ -68,12 +73,19 @@ def salvar_registro(request):
         _medicao.oma = lens["oma"]
         _medicao.processado = True
 
-        name = f"{str(_medicao.OS)}_{str(_medicao.id)}.txt"
+        name = f"OS_{str(_medicao.OS)}_ID_{str(_medicao.id)}.vca"
+
+        os = f'JOB="{_medicao.OS}"\n'
+
+        dbl = f'DBL={ponte}\n'
 
         with open(name, 'w', encoding='utf-8') as file:
+            file.write(os)
             file.write(lens["oma"])
+            file.write(dbl)
 
         path = Path(name)
+
         with path.open(mode="rb") as f:
             _medicao.oma_file = File(f, name=path.name)
             _medicao.save()
@@ -82,7 +94,7 @@ def salvar_registro(request):
 
     if request.method == "GET":
         # user = Usuarios.objects.get(id="23891265-80e6-44d8-88de-b3573bcf8bfc")
-        medicao = DadosMedicao.objects.filter(criado_por_id="23891265-80e6-44d8-88de-b3573bcf8bfc").values()
+        medicao = DadosMedicao.objects.filter().order_by('-data_criacao')
 
         contexto = {
             "medicoes": medicao
@@ -94,10 +106,11 @@ def salvar_registro(request):
 # @login_required
 # @autenticacao_necessaria
 def documentacao_1(request):
-    medicao = DadosMedicao.objects.all().values()
+    medicao = DadosMedicao.objects.filter(processado=True)
 
     contexto = {
-        "medicoes": medicao
+        "medicoes": medicao,
+
     }
     return render(request, 'app/documentacao_1.html', contexto)
 

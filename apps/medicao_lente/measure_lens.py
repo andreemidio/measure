@@ -112,7 +112,7 @@ class MeasurementLens:
     def read_image(self, filename: str) -> np.ndarray:
         return cv2.imread(filename, 0)
 
-    def measurement_lens(self, image: np.ndarray, img_bw: np.ndarray, contours, side: str):
+    def measurement_lens(self, image: np.ndarray, img_bw: np.ndarray, contours, contours_flipped, side: str):
         scale = self.get_aruco(image)
         if isinstance(scale, dict):
             if scale["erro"]:
@@ -123,17 +123,34 @@ class MeasurementLens:
 
         conto = max(contours, key=cv2.contourArea)
 
+        img_bw_flipped = cv2.flip(img_bw, 1)
+        image_flipped = cv2.flip(image, 1)
+
+        out_flipped = image_flipped.copy()
         ref = np.zeros_like(img_bw)
+        ref_flipped = np.zeros_like(img_bw_flipped)
+
+
         cv2.drawContours(ref, contours, 0, 255, 1)
+
+        cv2.drawContours(ref_flipped, contours_flipped, 0, 255, 1)
 
         # Step #5
         M = cv2.moments(contours[0])
         centroid_x = int(M['m10'] / M['m00'])
         centroid_y = int(M['m01'] / M['m00'])
+        # Step #5 Flipped
+        M_flipped = cv2.moments(contours[0])
+        centroid_x_flipped = int(M_flipped['m10'] / M_flipped['m00'])
+        centroid_y_flipped = int(M_flipped['m01'] / M_flipped['m00'])
+
 
         # Get dimensions of the image
         width = image.shape[1]
         height = image.shape[0]
+
+        width_flipped = image_flipped.shape[1]
+        height_flipped = image_flipped.shape[0]
 
         (x, y, w, h) = cv2.boundingRect(contours[0])
 
@@ -198,50 +215,78 @@ class MeasurementLens:
                      (int(resulato2.coords[1][0]), int(resulato2.coords[1][1])), (255, 255, 255), 2)
 
         # Define total number of angles we want
-        N = 360
-        raios: list = list()
+        N = 361
+        raios_oma1: list = list()
+        raios_oma2: list = list()
         # Step #6
 
         image_copy = image.copy()
 
         for i in range(N):
-            # Step #6a
             tmp = np.zeros_like(img_bw)
-
-            # Step #6b
             theta = i * (360 / N)
             theta *= np.pi / 180.0
-
-            # Step #6c
-
             largura = int(centroid_x + np.cos(theta) * width)
-
             altura = int(centroid_y - np.sin(theta) * height)
-
             cv2.line(tmp, (centroid_x, centroid_y), (largura, altura), 255, 5)
-
-            # Step #6d
             (row, col) = np.nonzero(np.logical_and(tmp, ref))
-
             radius = np.sqrt(((col[0] - centroid_x) ** 2.0) + ((row[0] - centroid_y) ** 2.0))
-
             # r, theta = self.cart2polar(col[0], row[0])
             r, ang = self._cartesian_to_polar(col[0], row[0], x_c=centroid_x, y_c=centroid_y)
-
-            # raios.append(round((r * 5) / 2))
-            raios.append(round(radius))
-
-            # Step #6e
+            # raios_oma1.append(round((r * 5) / 2))
+            raios_oma1.append(round(radius))
             cv2.line(out, (centroid_x, centroid_y), (col[0], row[0]), (0, 255, 0), 1)
 
-        first, second = self.find_max_values(raios)
+            # cv2.namedWindow("tmp", cv2.WINDOW_KEEPRATIO)
+            # cv2.imshow("tmp",out)
+            # cv2.waitKey(0)
+
+
+        # cv2.namedWindow("img_bw", cv2.WINDOW_KEEPRATIO)
+        # cv2.imshow("img_bw",img_bw)
+        # cv2.namedWindow("img_bw_flipped", cv2.WINDOW_KEEPRATIO)
+        # cv2.imshow("img_bw_flipped",img_bw_flipped)
+        # cv2.waitKey(0)
+
+        for i in range(N):
+            tmp_flipped = np.zeros_like(img_bw_flipped)
+            theta = i * (360 / N)
+            theta *= np.pi / 180.0
+            largura = int(centroid_x_flipped + np.cos(theta) * width_flipped)
+            altura = int(centroid_y_flipped - np.sin(theta) * height_flipped)
+            cv2.line(tmp_flipped, (centroid_x_flipped, centroid_y_flipped), (largura, altura), 255, 5)
+            (row, col) = np.nonzero(np.logical_and(tmp_flipped, ref_flipped))
+            radius = np.sqrt(((col[0] - centroid_x_flipped) ** 2.0) + ((row[0] - centroid_y_flipped) ** 2.0))
+            # r, theta = self.cart2polar(col[0], row[0])
+            r, ang = self._cartesian_to_polar(col[0], row[0], x_c=centroid_x_flipped, y_c=centroid_y_flipped)
+            # raios_oma1.append(round((r * 5) / 2))
+            raios_oma2.append(round(radius))
+            cv2.line(out_flipped, (centroid_x_flipped, centroid_y_flipped), (col[0], row[0]), (0, 255, 0), 1)
+
+            # cv2.namedWindow("tmp", cv2.WINDOW_KEEPRATIO)
+            # cv2.imshow("tmp",out_flipped)
+            # cv2.waitKey(0)
+
+
+        first, second = self.find_max_values(raios_oma1)
+
+        # l = np.array(raios_oma1)
+        # matrix = l.reshape(36, 10)
+        #
+        # reversed_matrix = matrix[:, ::-1]
+        #
+        # reversed_values_oma = np.array(reversed_matrix)
+        #
+        # reversed_values_oma = reversed_values_oma.ravel()
+        # reversed_values_oma = reversed_values_oma.tolist()
 
         values = dict(
             horizontal=floor(largura_lente_pixel * scale),
             vertical=floor(altura_lente_pixel * scale),
             diagonal=floor((first + second) * scale),
-            oma_medido=raios,
-            oma_invertido=raios[::-1]
+            oma_medido=raios_oma1,
+            # oma_invertido=raios_oma1[::-1]
+            oma_invertido=raios_oma2
         )
 
         return values
@@ -254,12 +299,18 @@ class MeasurementLens:
             image = self._resize_image(image, (1920, 1080))
 
         img_bw = image.copy()
+        img_bw = image.copy()
+
+        img_bw_flipped = cv2.flip(img_bw, 1)
         _canny = self._image_processing(image=img_bw)
         contours = self.find_contours(_canny)
 
+        _canny_flipped = self._image_processing(image=img_bw_flipped)
+        contours_flipped = self.find_contours(_canny_flipped)
+
         out = image.copy()
 
-        values = self.measurement_lens(image=out, img_bw=img_bw, contours=contours, side=side)
+        values = self.measurement_lens(image=out, img_bw=img_bw, contours=contours, contours_flipped=contours_flipped, side=side)
 
         if isinstance(values, dict):
             if values.get("erro") == 'Aruco not found':
@@ -268,44 +319,78 @@ class MeasurementLens:
                 return values
 
         oma_invertido_values = values.pop("oma_invertido")
+        oma_invertido_values.pop()
         oma_medido_values = values.pop("oma_medido")
 
         total_values = 360
 
         if side == "direito":
-            oma_medido = [f"R={';'.join(str(i) for i in oma_medido_values)}" for _ in
-                          range(total_values // 10)]
+            oma_medido = [f"R={';'.join(str(oma_medido_values[i]) for i in range(j, j + 10))}\n" for j in
+                          range(0, len(oma_medido_values), 10)]
 
-            var_invertido = "TRCFMT=1;360;E;R;F \n"
-            valor_oma_medido = var_invertido + oma_medido[0]
+            oma_medido = ''.join(oma_medido)
 
-            oma_invertido = [f"R={';'.join(str(i) for i in oma_invertido_values)}" for _ in
-                             range(total_values // 10)]
+            var_invertido = "TRCFMT=1;360;E;R;F\n"
+            valor_oma_medido = var_invertido + oma_medido
 
-            var_invertido = "TRCFMT=1;360;E;L;F \n"
-            valor_oma_invertido = var_invertido + oma_invertido[0]
+            oma_medido_hbox = f'HBOX={values["horizontal"]};{values["horizontal"]}\n'
+            oma_medido_vbox = f'VBOX={values["vertical"]};{values["vertical"]}\n'
+            oma_medido_fed = f'FED={values["diagonal"]};{values["diagonal"]}\n'
+
+            valor_oma_medido = valor_oma_medido + oma_medido_hbox + oma_medido_vbox + oma_medido_fed
+
+            oma_invertido = [f"R={';'.join(str(oma_invertido_values[i]) for i in range(j, j + 10))}\n" for j in
+                             range(0, len(oma_invertido_values), 10)]
+
+            oma_invertido = ''.join(oma_invertido)
+
+            var_invertido = "TRCFMT=1;360;E;L;F\n"
+            valor_oma_invertido = var_invertido + oma_invertido
+
+            oma_invertido_hbox = f'HBOX={values["horizontal"]};{values["horizontal"]}\n'
+            oma_invertido_vbox = f'VBOX={values["vertical"]};{values["vertical"]}\n'
+            oma_invertido_fed = f'FED={values["diagonal"]};{values["diagonal"]}\n'
+
+            valor_oma_invertido = valor_oma_invertido + oma_invertido_hbox + oma_invertido_vbox + oma_invertido_fed
 
             resultato_total = valor_oma_medido + valor_oma_invertido
 
         if side == "esquerdo":
-            oma_medido = [f"R={';'.join(str(i) for i in oma_medido_values)}" for _ in
-                          range(total_values // 10)]
+            oma_medido = [f"R={';'.join(str(oma_medido_values[i]) for i in range(j, j + 10))}\n" for j in
+                          range(0, len(oma_medido_values), 10)]
 
-            var_invertido = "TRCFMT=1;360;E;R;F \n"
-            valor_oma_medido = var_invertido + oma_medido[0]
+            oma_medido = ''.join(oma_medido)
 
-            oma_invertido = [f"R={';'.join(str(i) for i in oma_invertido_values)}" for _ in
-                             range(total_values // 10)]
+            var_invertido = "TRCFMT=1;360;E;L;F\n"
+            valor_oma_medido = var_invertido + oma_medido
 
-            var_invertido = "TRCFMT=1;360;E;R;F \n"
-            valor_oma_invertido = var_invertido + oma_invertido[0]
+            oma_medido_hbox = f'HBOX={values["horizontal"]};{values["horizontal"]}\n'
+            oma_medido_vbox = f'VBOX={values["vertical"]};{values["vertical"]}\n'
+            oma_medido_fed = f'FED={values["diagonal"]};{values["diagonal"]}\n'
+
+            valor_oma_medido = valor_oma_medido + oma_medido_hbox + oma_medido_vbox + oma_medido_fed
+
+            oma_invertido = [f"R={';'.join(str(oma_invertido_values[i]) for i in range(j, j + 10))}\n" for j in
+                             range(0, len(oma_invertido_values), 10)]
+
+            oma_invertido = ''.join(oma_invertido)
+
+            var_invertido = "TRCFMT=1;360;E;R;F\n"
+            valor_oma_invertido = var_invertido + oma_invertido
+
+            oma_invertido_hbox = f'HBOX={values["horizontal"]};{values["horizontal"]}\n'
+            oma_invertido_vbox = f'VBOX={values["vertical"]};{values["vertical"]}\n'
+            oma_invertido_fed = f'FED={values["diagonal"]};{values["diagonal"]}\n'
+
+            valor_oma_invertido = valor_oma_invertido + oma_invertido_hbox + oma_invertido_vbox + oma_invertido_fed
 
             resultato_total = valor_oma_medido + valor_oma_invertido
 
         data = dict(
 
             values=values,
-            oma=resultato_total
+            oma=resultato_total,
+            # t=cumulated_str
         )
 
         return data
@@ -326,31 +411,26 @@ if __name__ == '__main__':
 
     values = measurement.run(image=image, side="direito")
 
-    # print(values)
+    print(values)
 
-    values_per_line = 10
-    total_values = 360
+    # values_per_line = 10
+    # total_values = 360
 
     # Generate the values using the given format
-    values = [f"R={';'.join(str(2750 + i) for i in range(values_per_line))}" for _ in
-              range(total_values // values_per_line)]
-
-    # Define the number of values per line and the total number of values
-    values_per_line = 10
-    total_values = 360
-
-    # Generate the values in the desired format
-    values_per_line = 10
-    total_values = 360
-
-    # Generate the values in the desired format
-    values = [f"R={';'.join(str(2750 + i) for i in range(values_per_line))};" for _ in
-              range(total_values // values_per_line)]
-    remainder = total_values % values_per_line
-    if remainder > 0:
-        values.append(f"R={';'.join(str(2750 + i) for i in range(remainder))};")
-
-    # Accumulate the values in a string
-    cumulated_str = ' '.join(values)
-
-    print(cumulated_str)
+    # values = [f"R={';'.join(str(2750 + i) for i in range(values_per_line))}" for _ in
+    #           range(total_values // values_per_line)]
+    #
+    # total_values = 360
+    #
+    # values_per_line = 10
+    # total_values = 360
+    #
+    # values = [f"R={';'.join(str(2750 + i) for i in range(values_per_line))};\n" for _ in
+    #           range(total_values // 10)]
+    # remainder = total_values % 10
+    # if remainder > 0:
+    #     values.append(f"R={';'.join(str(2750 + i) for i in range(remainder))};\n")
+    #
+    # cumulated_str = ''.join(values)
+    #
+    # print(cumulated_str)

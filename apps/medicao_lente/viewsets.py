@@ -26,8 +26,6 @@ class DadosMedicaoViewSet(viewsets.ModelViewSet):
                         renderers.HTMLFormRenderer, renderers.JSONRenderer, ]
 
 
-
-
 class CnpjList(viewsets.ModelViewSet):
     queryset = DadosMedicao.objects.all()
 

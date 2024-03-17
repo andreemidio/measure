@@ -32,23 +32,26 @@
                         <div class="input" type="text">
                             <div>
                                 <h5 placeholder="HORIZONTAL" style="color: black;" id="first_name7" type="text"
-                                    class="validate" name="horizontal">Diagonal Maior: {{ medicao.diagonalMaior }}
+                                    class="validate" name="horizontal">Diagonal Maior: {{ medicao.diagonal }}
                                     mm</h5>
                             </div>
                         </div>
-                        
+
                     {% endif %}
                 {% endfor %}
+                <br>
                 <div>
 
                     <div>
                         <div>
                             <p>
                                 <label>
-                                    <input type="radio" name="side" value="direito"/>
-                                    <span style="color: black;">Olho direito</span>
                                     <input type="radio" name="side" value="esquerdo"/>
                                     <span style="color: black;">Olho esquerdo</span>
+                                </label>
+                                <label>
+                                    <input type="radio" name="side" value="direito"/>
+                                    <span style="color: black;">Olho direito</span>
                                 </label>
                             </p>
                         </div>
@@ -59,11 +62,7 @@
                             <input placeholder="DNP" id="first_name" type="text" class="validate" name="DNP">
                         </div>
                     </div>
-                    <div class="input" type="text">
-                        <div>
-                            <input placeholder="ALTURA" id="first_name1" type="text" class="validate" name="altura">
-                        </div>
-                    </div>
+
                     <div class="input" type="text">
                         <div>
                             <input placeholder="PONTE" id="first_name2" type="text" class="validate" name="ponte">
@@ -89,9 +88,7 @@
 
 
 
-    <div class="btn-float">
-        <a href="https://instagram.com/" target="_blank" class="btn-float"><i class="fab fa-whatsapp"></i></a>
-    </div>
+
     {% include 'app/TheNavigationBar.html' %}
     </div>
 

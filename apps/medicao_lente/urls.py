@@ -10,5 +10,4 @@ router.register(r'medicao', DadosMedicaoViewSet)
 
 urlpatterns = [
     path(r'', include(router.urls)),
-
 ]

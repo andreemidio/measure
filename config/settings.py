@@ -202,21 +202,7 @@ AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-# else:
-#
-#     STATIC_URL = 'static/'
-#     STATIC_ROOT = BASE_DIR / "staticfiles"
-#
-#     STATIC_URL = '/static/'
-#
-#     STATICFILES_DIRS = [
-#         os.path.join(BASE_DIR, 'static'),
-#     ]
-#
-#     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-#
-#     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-#     MEDIA_URL = '/media/'
+
 
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
@@ -256,11 +242,11 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
 CLOUDAMQP_URL = config('CLOUDAMQP_URL')
 
-if DEBUG is False:
-    SECURE_SSL_REDIRECT = True
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    SECURE_HSTS_PRELOAD = True
-    SECURE_HSTS_SECONDS = 1
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# if DEBUG is False:
+#     SECURE_SSL_REDIRECT = True
+#     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+#     SESSION_COOKIE_SECURE = True
+#     CSRF_COOKIE_SECURE = True
+#     SECURE_HSTS_PRELOAD = True
+#     SECURE_HSTS_SECONDS = 1
+#     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
