@@ -1,15 +1,4 @@
 #!/usr/bin/env python
-"""Django's command-Django REST framework
-sandro 
-Api Root Dados Medicao List
-
-Dados Medicao List
-GET /medicao_lente/
-HTTP 200 OK
-Allow: GET, POST, HEAD, OPTIONS
-Content-Type: application/json
-Vary: Accept
-line utility for administrative tasks."""
 import os
 import sys
 
