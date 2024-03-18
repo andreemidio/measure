@@ -29,7 +29,6 @@ class DadosMedicaoViewSet(viewsets.ModelViewSet):
 class CnpjList(viewsets.ModelViewSet):
     queryset = DadosMedicao.objects.all()
 
-    # serializer_class = DadosMedicaoSerializer
 
     def get_queryset(self):
         return self.queryset.all()
